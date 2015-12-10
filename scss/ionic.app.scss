@@ -1,0 +1,286 @@
+/*
+To customize the look and feel of Ionic, you can override the variables
+in ionic's _variables.scss file.
+
+For example, you might change some of the default colors:
+
+$light:                           #fff !default;
+$stable:                          #f8f8f8 !default;
+$positive:                        #387ef5 !default;
+$calm:                            #11c1f3 !default;
+$balanced:                        #33cd5f !default;
+$energized:                       #ffc900 !default;
+$assertive:                       #ef473a !default;
+$royal:                           #886aea !default;
+$dark:                            #444 !default;
+*/
+
+$positive:                        #EE4A60 !default;
+
+// The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+// Include all of Ionic
+@import "www/lib/ionic/scss/ionic";
+
+$pink-color: #ee4a60;
+$pink2-color: #c93c4f;
+// $pink3-color: #ee4a60;
+// $darkpink-color: #b31026;
+body {
+  cursor: url('http://ionicframework.com/img/finger.png'), auto;
+}
+ion-nav-view {
+  background-color: #fff
+}
+.slider {
+  height: 100%;
+}
+.slider-slide {
+  padding-top: 80px;
+  color: #000;
+  background-color: #fff;
+  text-align: center;
+
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+#logo {
+  margin: 30px 0px;
+}
+
+#list {
+  width: 170px;
+  margin: 30px auto;
+  // font-size: 20px;
+}
+#list ol {
+  margin-top: 30px;
+}
+#list ol li {
+  text-align: left;
+  list-style: decimal;
+  margin: 10px 0px;
+}
+.button.button-positive{
+	background-color: $pink-color;
+	border-color: $pink2-color;
+}
+
+.pink-color{
+  color: $pink-color
+}
+// .tabs-positive > .tabs, .tabs.tabs-positive {
+//   border-color: $darkpink-color;
+//   background-color: $pink3-color;
+//   background-image: linear-gradient(0deg, $darkpink-color, $darkpink-color 50%, transparent 50%);
+//   color: $darkpink-color;
+// }
+
+// Sign in
+  .signin-bar{
+  	padding-top:10px;
+    img{
+      display: inherit;
+      margin: 0 auto;
+    }
+  }
+  .register-link{
+  	text-align: center;
+  	display: block;
+  	text-decoration: none;
+  	color: $pink-color;
+  }
+
+.subtitle-intro {
+  margin-top: 30px;
+}
+
+// queue
+
+  .queue{
+
+  }
+
+.footer-intro {
+  bottom: 80px;
+  border: none;
+  background: none;
+  width: 94%;
+  margin: 0 auto;
+}
+
+.positive {
+  color: $positive !important;
+}
+
+.center {
+  text-align: center;
+}
+
+.button-inline {
+  display: block;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+.content-queue {
+  margin-top: 43px;
+}
+.content-current {
+  margin-top: -1px;
+}
+
+.search-queue {
+  border-bottom: 1px solid #ddd;
+}
+
+.tabs {
+  padding-top: 7px;
+}
+
+.card {
+  margin: 0;
+}
+.list:last-child.card {
+  margin-bottom: 0;
+}
+
+.current-queue {
+  margin-top: 0 !important;
+  margin-bottom: 7px !important;
+}
+
+.big-number {
+  font-size: 70px;
+  line-height: 50px;
+  margin: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+.slim-p {
+  margin: 2px !important;
+}
+.slim-h {
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.time-togo {
+}
+
+.balanced {
+  color: #33cd5f;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.margin-bottom {
+  margin-bottom: 20px !important;
+}
+
+.white {
+  color: #fff !important;
+}
+
+.black {
+  color: #000 !important;
+}
+
+.hide {
+  display: none;
+}
+
+.abs-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.button-ambil {
+  height: 140px;
+}
+
+.box-border {
+  margin: 10px 0;
+  border: 1px solid $positive;
+}
+
+.img-circle{
+  width:140px;
+  height:140px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: inherit;
+}
+
+// User-profile
+  .user-profile{
+    .pull-left{
+      float: left;
+    }
+    .pull-right{
+      float: right;
+    }
+    h1, h2, h3{
+      text-align: center;
+    }
+    h1{
+      font-size: 21px;
+    }
+    h2{
+      font-size: 12px;
+    }
+    h3{
+      font-size: 12px;
+    }
+    .url-user{
+      font-size: 10px;
+    }
+    .status-balance{
+      font-weight: 600;
+      &:after{
+        content: " ";
+        display: table;
+        clear: both;
+      }
+      > div{
+        display: block;
+      }
+      width: 100%;
+      display: block;
+    }
+    .button-block{
+      .pull-left, .pull-right{
+        display: inline-block;
+      }
+    }
+  }
+  .button.button-logout{
+    margin: 0 auto;
+    display: block;
+    border-color: $pink-color;
+    color: $pink-color;
+
+    margin-top: 40px;
+  }
+// Balance Status
+
+.float-right {
+  float: right;
+}
+
+.typo-point {
+  color: #444;
+  font-size: 16px;
+  line-height: 32px;
+}
+.typo-price {
+  color: #000;
+  font-size: 14px;
+  line-height: 32px;
+  margin-right: 15px;
+}
