@@ -1,0 +1,28 @@
+<div class="bar bar-header">
+<div class="h1 title">Daftar</div>
+</div>
+<div class="content has-header">
+  <div class="list">
+    <label class="item item-input">
+      <input type="text" placeholder="Nama lengkap" ng-model="user.name">
+    </label>
+    <label class="item item-input">
+      <input type="text" placeholder="Handphone" ng-model="user.phone">
+    </label>
+    <label class="item item-input">      
+      <input type="text" placeholder="Email" ng-model="user.email">
+    </label>
+    <label class="item item-input">
+      <input type="password" placeholder="Password" ng-model="user.password">
+    </label>
+    <label class="item item-input">
+      <input type="text" placeholder="Kode referral dari guru wali kelas" ng-model="user.referral">
+    </label>
+  </div>
+  <div class="padding">
+    <button class="button button-block button-positive" ng-click="createUser()">Buat Akun</button>
+  </div>
+  <div class="center" align="left">
+      Siswa atau wali siswa, mintalah pada wali kelas nomor kode referral untuk kemudahan pendaftaran.
+  </div>
+</div>

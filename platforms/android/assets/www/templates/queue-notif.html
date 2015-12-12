@@ -1,0 +1,23 @@
+<ion-view title="Current Queue">
+  <ion-content class="padding">
+    <div class="queue">
+      <div class="head-queue"> 
+        <img ng-src="data.image" />
+        <div class="office-name">
+          <h4>{{data.name}}</h4>
+          <p>{{data.address}}</p>
+        </div>
+        <i class="icon ion-ios7-star-outline"></i>
+      </div>
+      <div class="body-queue notif">
+        <h4>Current Queue</h4>
+        <h1>{{data.current_time}}</h1>
+      </div>
+      <div class="bottom-queue">
+        <h4>Available Queue Number</h4>
+        <h1>{{data.available_number}}</h1>
+      </div>
+    </div>
+    <p>{{data.timetogo}} to Go!</p>
+  </ion-content>
+</ion-view>

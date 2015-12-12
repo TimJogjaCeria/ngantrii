@@ -1,0 +1,32 @@
+<ion-slide-box on-slide-changed="slideChanged(index)">
+  <ion-slide>
+    <div class="content ionic-pseudo padding">
+      <h6>Thank you for choosing the Awesome App!</h6>
+      <div id="logo">
+        <img src="img/intro.png">
+      </div>
+      <div class="center">
+        <button class="button button-small button-positive">
+          &nbsp;&nbsp;&nbsp;Slide to next&nbsp;&nbsp;&nbsp;
+        </button>
+      </div>
+    </div>
+  </ion-slide>
+  <ion-slide>
+    <div class="content ionic-pseudo padding intro-two">
+      <h4>Using Ngantrii</h4>
+      <div id="list">
+        <p>Just three step</p>
+        <ol>
+          <li>Register</li>
+          <li>Choose your merchant</li>
+          <li>Take Queue Number</li>
+        </ol>
+      </div>
+    </div>
+    <div class="bar bar-footer footer-intro">
+      <button class="button button-clear pull-left">Back</button>
+      <button class="button button-clear pull-right positive" ui-sref="login">Next</button>
+    </div>
+  </ion-slide>
+</ion-slide-box>

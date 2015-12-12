@@ -3,7 +3,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.controllers'])
+
+angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngantriApp.controllers'])
+
 .factory('School', ['$firebaseArray', function($firebaseArray) {
     var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
     return $firebaseArray(schoolRef);
@@ -11,6 +13,10 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.cont
 .factory('User', ['$firebaseArray', function($firebaseArray) {
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
+}])
+.factory('Course', ['$firebaseArray', function($firebaseArray) {
+    var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
+    return $firebaseArray(courseRef);
 }])
 .factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
@@ -36,7 +42,7 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.cont
         if (window.StatusBar) {
             StatusBar.styleDefault();
         }
-        
+
     });
     $rootScope.baseUrl = 'https://ngantri.firebaseio.com/sayangjuara/';
         var authRef = new Firebase($rootScope.baseUrl);
@@ -98,6 +104,8 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.cont
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  // redirect the current feature just course making
+  $urlRouterProvider.when('/teacher', '/teacher/course');
   $stateProvider.state('intro', {
     url: '/intro',
     templateUrl: 'templates/intro.html',
@@ -137,10 +145,73 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.cont
         templateUrl: "templates/user.html"
       }
     }
+  }).state('home.balancestatus', {
+    url: '/balanceuser',
+    views: {
+      'user-tab': {
+        templateUrl: "templates/balancestatus.html"
+      }
+    }
+  }).state('home.buypoint', {
+    url: '/buypoint',
+    views: {
+      'user-tab': {
+        templateUrl: "templates/buypoint.html"
+      }
+    }
+  }).state('teacher', {
+    url: '/teacher',
+    abstract: true,
+    templateUrl: 'templates/teacher-tabs.html'
+  }).state('teacher.home', {
+    url: '',
+    views: {
+      'teacher-home': {
+        controller: 'TeacherHomeCtrl',
+        templateUrl: "templates/teacher-home.html"
+      }
+    }
+  }).state('teacher.courseList', {
+    url: '/course',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherCourseListCtrl',
+        templateUrl: "templates/teacher-course-list.html"
+      }
+    }
+  }).state('teacher.courseChapterList', {
+    url: '/course/chapter/:id',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterListCtrl',
+        templateUrl: "templates/teacher-chapter-list.html"
+      }
+    }
+  }).state('teacher.courseChapter', {
+    url: '/course/chapter/create',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterDetectCtrl',
+        templateUrl: "templates/teacher-course-chapter.html"
+      }
+    }
+  }).state('teacher.courseChapterCreate', {
+    url: '/course/newchapter',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterCreateCtrl',
+        templateUrl: "templates/teacher-chapter-create.html"
+      }
+    }
+  }).state('teacher.courseChapter.edit', {
+    url: '/:course/:id',
+    templateUrl: "templates/teacher-chapter-edit.html"
   });
 
-  
+
   // if none of the above states are matched, use this as the fallback
+
   $urlRouterProvider.otherwise('/login');
+
 
 });

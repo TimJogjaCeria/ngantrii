@@ -1,0 +1,22 @@
+<div class="signin-bar">
+	<img src="img/intro.png">
+</div>
+<div class="content has-header">
+	<div class="list">
+        <label class="item item-input">
+          <input type="email" placeholder="Email" ng-model="user.email">
+        </label>
+        <label class="item item-input">
+          <input type="password" placeholder="Password" ng-model="user.password">
+        </label>
+    </div>
+	<div class="padding">
+		<button class="button button-block button-positive" ng-click="validateUser()">Masuk</button>
+	</div>
+	<a class="register-link" ui-sref="register">Daftar disini</a>
+	<div class="center">
+		<button class="button button-small button-stable button-outline button-inline" ui-sref="intro">
+		  Tampilkan Tutorial Aplikasi
+		</button>
+	</div>
+</div>

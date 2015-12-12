@@ -1,0 +1,30 @@
+<ion-view title="Daftar Kursus">
+<div class="bar bar-subheader search-queue">
+  <h2 class="title">
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input type="text" placeholder="Search" ng-model="search">
+    </label>
+  </h2>
+</div>
+  <ion-content>
+    <div class="content ionic-pseudo content-queue">
+
+      <div class="list">
+        <div ng-repeat="l in lists | filter:search">
+          <a class="item item-thumbnail-left" ng-hide="l.status" ui-sref="home.queue({id:l.id})">
+            <img src="http://ionicframework.com/img/docs/blue-album.jpg">
+            <h2>{{l.name}}</h2>
+            <p><i class="ion-ios7-location"></i> {{l.address}}</p>
+          </a>
+          <a class="item item-thumbnail-left" ng-show="l.status" ui-sref="home.active({id:l.id})">
+            <img src="http://ionicframework.com/img/docs/blue-album.jpg">
+            <h2>{{l.name}}</h2>
+            <p><i class="ion-ios7-location"></i> {{l.address}}</p>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </ion-content>
+</ion-view>
