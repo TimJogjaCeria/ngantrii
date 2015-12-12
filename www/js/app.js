@@ -15,8 +15,15 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     return $firebaseArray(userRef);
 }])
 .factory('Course', ['$firebaseArray', function($firebaseArray) {
-    var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
+  return function(id) {
+    if (!id) {
+      var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
+    }else{
+      var courseRef = new Firebase('https://ngantri.firebaseio.com/course/' + id);
+    }
     return $firebaseArray(courseRef);
+  };
+
 }])
 .factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
@@ -101,7 +108,7 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
 
 .config(function($stateProvider, $urlRouterProvider) {
   // redirect the current feature just course making
-  $urlRouterProvider.when('/teacher', '/teacher/course');
+  // $urlRouterProvider.when('/teacher', '/teacher/course');
   $stateProvider.state('intro', {
     url: '/intro',
     templateUrl: 'templates/intro.html',
@@ -185,6 +192,7 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     }
   }).state('teacher.courseChapter', {
     url: '/course/chapter/create',
+    abstract: true,
     views: {
       'teacher-course': {
         controller: 'TeacherChapterDetectCtrl',
@@ -199,8 +207,14 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
         templateUrl: "templates/teacher-chapter-create.html"
       }
     }
-  }).state('teacher.courseChapter.edit', {
+  }).state('teacher.courseChapter.continue', {
     url: '/:course/:id',
+    controller: 'TeacherChapterContinueCtrl',
+    templateUrl: "templates/chapter-form.html"
+  })
+  .state('teacher.courseChapter.edit', {
+    url: '/:course/:id/edit',
+    controller: 'TeacherChapterEditCtrl',
     templateUrl: "templates/teacher-chapter-edit.html"
   });
 

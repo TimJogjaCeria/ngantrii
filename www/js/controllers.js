@@ -515,37 +515,53 @@ angular.module('ngantriApp.controllers', [])
 }).controller('TeacherHomeCtrl',function(){})
 
 .controller('TeacherCourseListCtrl',function($scope, $rootScope, $state, $ionicPopup, Course){
-  $scope.courseList = Course
-  console.log($scope.courseList)
-  if($scope.courseList.length <= 0){
-    var alertPopup = $ionicPopup.alert({
-      title: 'Oops!',
-      template: 'Anda belum memiliki kursus sama sekali. Silahkan membuat yang baru.',
-      buttons: [{
-        type: 'button-positive',
-        text: 'Buat Baru'
-      }]
-    });
-    alertPopup.then(function(res) {
-     $state.go("teacher.courseChapterCreate")
-    });
-  }
+  $scope.courseList = Course()
+  // $scope.$apply();
+  // if($scope.courseList.length <= 0){
+  //   var alertPopup = $ionicPopup.alert({
+  //     title: 'Oops!',
+  //     template: 'Anda belum memiliki kursus sama sekali. Silahkan membuat yang baru.',
+  //     buttons: [{
+  //       type: 'button-positive',
+  //       text: 'Buat Baru'
+  //     }]
+  //   });
+  //   alertPopup.then(function(res) {
+  //    $state.go("teacher.courseChapterCreate")
+  //   });
+  // }
 }).controller('TeacherChapterListCtrl', function(){
 
 })
-.controller('TeacherChapterCreateCtrl', function($scope, Course, Chapter){
+.controller('TeacherChapterCreateCtrl', function($scope, Course, Chapter, $state){
   $scope.course = Course
-  $scope.content = "sdas";
+  $scope.loading = false
+
   $scope.save = function(){
-    $scope.course.$add({user_id: window.localStorage['user_id']}).then(function(refCourse){
-      console.log(refCourse.key());
+    $scope.loading = true
+    $scope.course().$add({user_id: window.localStorage['user_id'], course_title: this.course_title}).then(function(refCourse){
       var course_id = refCourse.key();
-      Chapter(course_id).$add({content: $('.fr-view').html()}).then(function(refChapter){
-        console.log(refChapter);
+      Chapter(course_id).$add({content: $('.fr-view').html(), id: 1}).then(function(refChapter){
+        $scope.loading = false;
+        $state.go('teacher.courseChapter.continue',{course: course_id, id: 2});
       })
     })
   }
 })
-.controller('TeacherChapterDetectCtrl', function(){
+.controller('TeacherChapterContinueCtrl', function($scope, Course, Chapter, $state, $stateParams){
+  $scope.course = Course
+  $scope.loading = false
 
+  $scope.save = function(){
+    $scope.loading = true
+    Chapter(course_id).$add({content: $('.fr-view').html(), id: $stateParams.id}).then(function(refChapter){
+      $scope.loading = false;
+      $state.go('teacher.courseChapter.continue',{course: course_id, id: $stateParams.id + 1});
+    })
+  }
+})
+.controller('TeacherChapterDetectCtrl', function($scope, Chapter, $stateParams, Course){
+  $scope.chapters = Chapter($stateParams.course)
+  $scope.$apply()
+  console.log($scope.chapters)
 });

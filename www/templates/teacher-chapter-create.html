@@ -1,9 +1,12 @@
 <ion-view title="Buat Bab">
   <ion-content>
+    <input type="text" placeholder="Judul Kursus" ng-model="course_title">
     <textarea froala ng-model="content"></textarea>
     <div class="form-confirm">
-      <button class="button button-positive col col-33 pull-left" ng-click="save()"><i class="fa fa-save"></i> Simpan</button>
-      <button class="button button-positive col col-33 pull-right" ng-click="create()">Lanjutan <i class="icon ion-ios7-arrow-right"></i><i class="icon ion-ios7-arrow-right"></i></button>
+      <button class="button button-positive col col-33 pull-right" ng-show="loading">
+        <i class="icon ion-loading-c"></i> Loading...
+      </button>
+      <button class="button button-positive col col-33 pull-right" ng-click="save()" ng-hide="loading">Simpan & Lanjutan <i class="icon ion-ios7-arrow-right"></i><i class="icon ion-ios7-arrow-right"></i></button>
     </div>
   </ion-content>
 </ion-view>
