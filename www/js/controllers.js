@@ -345,8 +345,8 @@ angular.module('ngantriApp.controllers', [])
   //    $state.go("teacher.courseChapterCreate")
   //   });
   // }
-}).controller('TeacherChapterListCtrl', function(){
-
+}).controller('TeacherChapterListCtrl', function($scope, $stateParams, Chapter){
+  $chapterList = Chapter($stateParams.course)
 })
 .controller('TeacherChapterCreateCtrl', function($scope, Course, Chapter, $state){
   $scope.course = Course
@@ -369,17 +369,20 @@ angular.module('ngantriApp.controllers', [])
 
   $scope.save = function(){
     $scope.loading = true
-    Chapter(course_id).$add({content: $('.fr-view').html(), id: $stateParams.id}).then(function(refChapter){
+    Chapter($stateParams.course).$add({content: $('.fr-view').html(), id: $stateParams.id}).then(function(refChapter){
       $scope.loading = false;
-      $state.go('teacher.courseChapter.continue',{course: course_id, id: $stateParams.id + 1});
+      $state.go('teacher.courseChapter.continue',{course: $stateParams.course, id: parseInt($stateParams.id) + 1});
     })
   }
 })
 .controller('TeacherChapterDetectCtrl', function($scope, Chapter, $stateParams, Course){
   var regUserDataRef = new Firebase("https://ngantri.firebaseio.com/course/" + $stateParams.course + "/chapter/");
   regUserDataRef.once("value", function(data){
-    console.log(data)
-    $scope.chapters = data.val();
+    console.log(data.val());
   })
+})
+.controller('TeacherChapterEditCtrl',function($scope, $stateParams, Chapter){
+
+
 });
 

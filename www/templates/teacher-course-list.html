@@ -11,7 +11,7 @@
   <ion-content>
     <div class="content ionic-pseudo content-queue">
       <div class="list">
-        <a ng-repeat="l in courseList | filter:search" ng-bind="l.course_title">
+        <a class="item" ng-repeat="l in courseList | filter:search" ui-sref="teacher.courseChapter.edit({course:l.$id,id:1})" ng-bind="l.course_title">
         </a>
       </div>
     </div>
