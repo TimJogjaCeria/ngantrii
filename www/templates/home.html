@@ -1,6 +1,6 @@
 <ion-view title="Home">
-  <ion-content>
-    <div ng-if="user.role == 'Guru'">
+  <div ng-if="user.role == 'Guru'">
+
       <div class="center">
         <button class="button button-small button-stable button-outline button-inline" ng-click="syncMataPelajaranAktif()">
           Sync Mata Pelajaran Aktif
@@ -18,6 +18,19 @@
           Broadcast pengumuman
         </button>
       </div>
+
     </div>
-  </ion-content>
+
+    <div ng-if="user.role == 'Siswa'">
+      <div class="content has-header">
+        <ion-list>
+          <ion-item ng-repeat="mp in matpel"">
+          <button class="button button-small button-stable button-outline button-inline" ng-click="trackMatpel(mp.id)">
+            {{mp.nama}}
+          </button>
+          </ion-item>
+        </ion-list>
+      </div>
+        </div>
+    </div>
 </ion-view>

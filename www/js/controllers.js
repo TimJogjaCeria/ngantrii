@@ -225,11 +225,20 @@ angular.module('ngantriApp.controllers', [])
 })
   .controller('HomeCtrl', function($scope, $rootScope, $firebase, SyncService) {
     console.log('HomeCtrl created');
+
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
     regUserDataRef.once("value", function(data){
       $scope.user = data.val();
     });
 
+    var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/');
+    refMatpelAktif.once("value", function(data){
+      $scope.matpel = data.val();
+      console.log($scope.matpel);
+    });
+
+
+    //TODO Pisahkan antara guru siswa dan ortu
     $scope.syncMataPelajaranAktif = function(){
       SyncService.getMataPelajaranAktif().then(function(resp){
         console.log(resp.data.data);
@@ -245,6 +254,12 @@ angular.module('ngantriApp.controllers', [])
         $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
     }
+
+    $scope.trackMatpel = function(matpel_id){
+      console.log('matpel_id');
+      console.log(matpel_id);
+    }
+
   })
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);

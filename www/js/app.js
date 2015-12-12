@@ -14,10 +14,10 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
 }])
-.factory('Course', ['$firebaseArray', function($firebaseArray) {
-    var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
-    return $firebaseArray(courseRef);
-}])
+//.factory('Course', ['$firebaseArray', function($firebaseArray) {
+//    var courseRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/mata_pelajaran/semester_aktif/');
+//    return $firebaseArray(courseRef);
+//}])
 .factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
   return $firebaseArray(userRef);
@@ -143,20 +143,6 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     views: {
       'user-tab': {
         templateUrl: "templates/user.html"
-      }
-    }
-  }).state('home.balancestatus', {
-    url: '/balanceuser',
-    views: {
-      'user-tab': {
-        templateUrl: "templates/balancestatus.html"
-      }
-    }
-  }).state('home.buypoint', {
-    url: '/buypoint',
-    views: {
-      'user-tab': {
-        templateUrl: "templates/buypoint.html"
       }
     }
   }).state('teacher', {
