@@ -49,6 +49,9 @@ angular.module('ngantriApp.controllers', [])
       window.localStorage['user_id'] = user.uid;
       window.localStorage['user_role'] = user_login.role
       window.localStorage['user_referral'] = user_login.referral;
+      window.localStorage['user'] = user_login;
+      $rootScope.user = user_login;
+
 
       $scope.user_role = window.localStorage['user_role'];
       $scope.user_referral = window.localStorage['user_referral'];
@@ -380,15 +383,17 @@ angular.module('ngantriApp.controllers', [])
     });
   }, true);
 
-}).controller('UserCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $firebase){
-  var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
-  $scope.user = {};
-  regUserDataRef.once("value", function(data) {
-    $scope.user = data.val();
-    console.log($scope.user);
-  });
+}).controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
+  //var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
+  $scope.user = $rootScope.user;
+  //regUserDataRef.once("value", function(data) {
+  //  $scope.user = data.val();
+  //  console.log($scope.user);
+//});
 
-
+  $scope.sendReferralSms = function() {
+    $cordovaSocialSharing.share('Halo, ini adalah invitasi untuk men-download aplikasi SayangJuara yang bisa di download di http://jadijuara.com. Gunakan kode referral ini saat registrasi ' + $rootScope.user.referral  +'. Salam hormat, ' + $rootScope.user.name);
+  }
   // A confirm dialog
    $scope.logoutConfirm = function() {
      var confirmPopup = $ionicPopup.confirm({
