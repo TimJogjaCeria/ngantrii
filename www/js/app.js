@@ -14,6 +14,10 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
 }])
+.factory('Course', ['$firebaseArray', function($firebaseArray) {
+    var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
+    return $firebaseArray(courseRef);
+}])
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

@@ -481,8 +481,11 @@ angular.module('ngantriApp.controllers', [])
 }).controller('TeacherChapterListCtrl', function(){
 
 })
-.controller('TeacherChapterCreateCtrl', function($rootScope){
-
+.controller('TeacherChapterCreateCtrl', function($scope, Course){
+  $scope.course = Course
+  $scope.create = function(){
+    $scope.course.$add({user_id: window.localStorage['user_id']})
+  }
 }).controller('TeacherChapterDetectCtrl', function(){
 
 });
