@@ -16,6 +16,16 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'ngantriApp.cont
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
   return $firebaseArray(userRef);
 }])
+.factory('SyncService', function($http, $log) {
+    $log.info('SyncMataPelajaranAktif Factory');
+    var url = 'https://raw.githubusercontent.com/TimJogjaCeria/sayangjuara-backend/master/matpel_semester_aktif.json';
+
+    return {
+      getMataPelajaranAktif: function () {
+        return $http.get(url);
+      }
+    }
+})
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
