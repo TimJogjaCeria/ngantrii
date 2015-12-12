@@ -16,7 +16,7 @@ angular.module('ngantriApp.controllers', [])
   }
 })
 
-.controller('LoginCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window) {
+.controller('LoginCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window, $log, User) {
   $scope.toIntro = function(){
     window.localStorage['didTutorial'] = "false";
     $state.go('intro');
@@ -26,7 +26,8 @@ angular.module('ngantriApp.controllers', [])
 
   $scope.user = {
     email: "",
-    password: ""
+    password: "",
+    referral: ""
   };
   $scope.validateUser = function() {
     $rootScope.show('Please wait.. Authenticating');
@@ -37,13 +38,22 @@ angular.module('ngantriApp.controllers', [])
       return false;
     }
 
-    $rootScope.auth.$login('password', {
+    $rootScope.auth.$authWithPassword({
       email: email,
       password: password
     }).then(function(user) {
       $rootScope.hide();
-      window.localStorage['user_id'] = user.id;
-      $window.location.href = ('#/home');
+      var user_login = User.$getRecord(user.uid);
+      $log.info('login ' + user_login.uid + ', role ' + user_login.role);
+      // user authenticated with Firebase
+      window.localStorage['user_id'] = user.uid;
+      window.localStorage['user_role'] = user_login.role
+      window.localStorage['user_referral'] = user_login.referral;
+
+      $scope.user_role = window.localStorage['user_role'];
+      $scope.user_referral = window.localStorage['user_referral'];
+
+      $state.go('home.home');
     }, function(error) {
       $rootScope.hide();
       if (error.code == 'INVALID_EMAIL') {
@@ -60,86 +70,114 @@ angular.module('ngantriApp.controllers', [])
 })
 
 .controller('RegCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window) {
-  $scope.toIntro = function(){
-    window.localStorage['didTutorial'] = "false";
-    $state.go('intro');
-  }
-  $scope.user = {
-    email: "",
-    password: "",
-    name: "",
-    phone: ""
-  };
-  $scope.createUser = function() {
-    var email = this.user.email;
-    var password = this.user.password;
-    var name = this.user.name;
-    var phone = this.user.phone;
-    if (!email || !password) {
-      $rootScope.notify("Please enter valid credentials");
-      return false;
-    }
-    $rootScope.show('Please wait.. Registering');
+      $scope.toIntro = function () {
+        window.localStorage['didTutorial'] = "false";
+        $state.go('intro');
+      }
+      $scope.user = {
+        email: "",
+        password: "",
+        name: "",
+        phone: "",
+        referral: "",
+        role: ""
+      };
+      $scope.createUser = function () {
+        var email = this.user.email;
+        var password = this.user.password;
+        var name = this.user.name;
+        var phone = this.user.phone;
+        var referral = this.user.referral;
 
-    $rootScope.auth.$createUser(email, password, function(error, user) {
-      if (!error) {
-        $rootScope.hide();
-        window.localStorage['user_id'] = user.id;
-        window.localStorage['merchantName'] = name;
-        var merchant_form = {
+        if (!email || !password) {
+          $rootScope.notify("Please enter valid credentials");
+          return false;
+        }
+        $rootScope.show('Please wait.. Registering');
+
+        $rootScope.auth.$createUser({'email':email, 'password':password}).then(function (userData) {
+          $rootScope.hide();
+          console.log("User " + userData.uid + " created successfully!");
+          window.localStorage['user_id'] = userData.uid;
+          window.localStorage['merchantName'] = name;
+
+          var userData = {
             name: name,
             phone: phone,
-            poin: 5,
+            referral: referral,
             created: Date.now(),
             updated: Date.now()
-        };
-        
-        var regMercantFormRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
-        regMercantFormRef.set(merchant_form);
-        $window.location.href = ('#/home');
-      } else {
-        $rootScope.hide();
-        if (error.code == 'INVALID_EMAIL') {
-          $rootScope.notify('Invalid Email Address');
-        } else if (error.code == 'EMAIL_TAKEN') {
-          $rootScope.notify('Email Address already taken');
-        } else {
-          $rootScope.notify('Oops something went wrong. Please try again later');
-        }
-      }
-    });
-  }
-})
-.controller('GetMerchantCtrl', function($scope, $rootScope, $firebase) {
-  var regMerchantQueueRef = new Firebase($rootScope.baseUrl + 'merchant_data');
-  $scope.merchantList = $firebase(regMerchantQueueRef);
-  $scope.$watch('merchantList', function (value) {
-    regMerchantQueueRef.once("value", function(data) {
-      $scope.lists = [];
-      for (var k in data.val()) {
-        var v = data.val()[k];
-        var kr = {id: k,name: v.name,address: v.address};
-        for (var k1 in v.user) {
-          var v1 = v.user[k1];
-          if(v1.user_id === window.localStorage['user_id']) {
-            kr.status=1;
+          };
+
+          var refUserData = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
+          refUserData.set(userData);
+
+          if (referral == '') {
+            console.log('here');
+            $window.location.href = ('#/registerschool');
+          } else {
+            $window.location.href = ('#/home');
           }
-        }
-        $scope.lists.push(kr);
+        }, function (error) {
+          $rootScope.hide();
+          if (error.code == 'INVALID_EMAIL') {
+            $rootScope.notify('Invalid Email Address');
+          } else if (error.code == 'EMAIL_TAKEN') {
+            $rootScope.notify('Email Address already taken');
+          } else {
+            $rootScope.notify('Oops something went wrong. Please try again later');
+          }
+        })
       }
-      // $scope.lists.forEach(function(a){
-      //   console.log(a);
-      // });
-    });
-  }, true);
-  $scope.show = function (data) {
-    for (var k in data.user) {
-        var v = data.user[k];
-        console.log(v.user_id+'==='+window.localStorage['user_id']);
-        return v.user_id===window.localStorage['user_id'];
+    })
+.controller('ChooseSchoolCtrl', function($scope, $log, $rootScope, $state, School, User) {
+  $log.info('ChooseSchoolCtrl');
+  $scope.teacher = {
+    school_name: "",
+    long: "",
+    lat: "",
+    class_name: ""
+  };
+
+  $scope.schools = School;
+
+  $scope.createSchool = function() {
+    var school_name = this.teacher.school_name;
+    var class_name = this.teacher.class_name;
+    var lat = this.teacher.lat;
+    var long = this.teacher.long;
+
+    if (!school_name || !class_name) {
+      $rootScope.notify("Please enter valid school information");
+      return false;
     }
-  }
+    $rootScope.show('Harap sabar..mempersiapkan data sekolah');
+    var school = $scope.schools.$add({'name': school_name, 'lat': lat, 'long': long}).then(function(refSchool) {
+      var user_id = window.localStorage['user_id'];
+      var school_id = refSchool.key();
+
+      //associate user with school
+      var user = User.$getRecord(user_id);
+      user.school_id = school_id;
+      var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
+      user.referral = rand.toUpperCase();
+      user.role = 'teacher';
+      User.$save(user);
+      window.localStorage['user_role'] = user.role;
+      window.localStorage['user_referral'] = user.referral;
+      $rootScope.hide();
+      $state.go('home.home');
+    });
+
+
+    }
 })
+.controller('HomeCtrl', function($scope, $rootScope, $firebase) {
+  console.log('HomeCtrl created');
+  $scope.user_role = window.localStorage['user_role'];
+  $scope.user_referral = window.localStorage['user_referral'];
+
+    })
 .controller('QueueCtrl', function($scope, $state, $rootScope, $stateParams, $firebase, $ionicPopup, $timeout) {
   var regMerchantDataRef = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id);
   $scope.merchantData = $firebase(regMerchantDataRef);
@@ -307,7 +345,7 @@ angular.module('ngantriApp.controllers', [])
 }).controller('ActiveListCtrl', function($scope, $rootScope, $firebase) {
   var regMerchantQueueRef = new Firebase($rootScope.baseUrl + 'merchant_data');
   $scope.merchantList = $firebase(regMerchantQueueRef);
-  
+
   $scope.$watch('merchantList', function (value) {
     regMerchantQueueRef.once("value", function(data) {
       $scope.lists = [];
@@ -320,7 +358,7 @@ angular.module('ngantriApp.controllers', [])
           }
         }
       }
-      
+
 
       // $scope.lists.forEach(function(a){
       //   console.log(a);

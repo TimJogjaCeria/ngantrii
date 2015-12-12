@@ -4,8 +4,15 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
-
-.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading) {
+.factory('School', ['$firebaseArray', function($firebaseArray) {
+    var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
+    return $firebaseArray(schoolRef);
+}])
+.factory('User', ['$firebaseArray', function($firebaseArray) {
+    var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
+    return $firebaseArray(userRef);
+}])
+.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -17,7 +24,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
         }
         
     });
-    $rootScope.baseUrl = 'https://ngantri.firebaseio.com/';
+    $rootScope.baseUrl = 'https://ngantri.firebaseio.com/sayangjuara/';
         var authRef = new Firebase($rootScope.baseUrl);
         $rootScope.auth = $firebaseAuth(authRef);
 
@@ -43,7 +50,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
         };
 
         $rootScope.logout = function() {
-            $rootScope.auth.$logout();
+            $rootScope.auth.$unauth();
             $rootScope.checkSession();
         };
 
@@ -54,12 +61,18 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
                     window.localStorage['user_id'] = null;
                     $window.location.href = '#/login';
                 } else if (user) {
+                    var user_login = User.$getRecord(user.uid);
+                    $log.info('login ' + user_login.uid + ', role ' + user_login.role);
                     // user authenticated with Firebase
-                    window.localStorage['user_id'] = user.id;
+                    window.localStorage['user_id'] = user.uid;
+                    window.localStorage['user_role'] = user_login.role
+                    window.localStorage['user_referral'] = user_login.referral;
                     $window.location.href = ('#/home');
                 } else {
                     // user is logged out
                     window.localStorage['user_id'] = null;
+                    window.localStorage['user_role'] = null;
+                    window.localStorage['user_referral'] = null;
                     $window.location.href = '#/login';
                 }
             });
@@ -83,6 +96,10 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
     url: '/register',
     templateUrl: 'templates/register.html',
     controller: 'RegCtrl'
+  }).state('registerschool', {
+      url: '/registerschool',
+      templateUrl: 'templates/choose_school.html',
+      controller: 'ChooseSchoolCtrl'
   }).state('home', {
     url: '/home',
     abstract: true,
@@ -91,7 +108,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
     url: '',
     views: {
       'home-tab': {
-        controller: 'GetMerchantCtrl',
+        controller: 'HomeCtrl',
         templateUrl: "templates/home.html"
       }
     }
@@ -145,6 +162,6 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
 
   
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/intro');
+  $urlRouterProvider.otherwise('/login');
 
 });
