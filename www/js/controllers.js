@@ -234,7 +234,6 @@ angular.module('ngantriApp.controllers', [])
     var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif');
     refMatpelAktif.once("value", function(data){
       $scope.matapelajaran = data.val();
-      $scope.textipad = 'iPad';
       $scope.$apply();
     });
 
