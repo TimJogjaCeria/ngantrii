@@ -15,7 +15,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
         if (window.StatusBar) {
             StatusBar.styleDefault();
         }
-        
+
     });
     $rootScope.baseUrl = 'https://ngantri.firebaseio.com/';
         var authRef = new Firebase($rootScope.baseUrl);
@@ -71,6 +71,8 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  // redirect the current feature just course making
+  // $urlRouterProvider.when('/teacher', '/teacher/course');
   $stateProvider.state('intro', {
     url: '/intro',
     templateUrl: 'templates/intro.html',
@@ -141,10 +143,66 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'ngantriApp.controllers'])
         templateUrl: "templates/buypoint.html"
       }
     }
+  }).state('teacher', {
+    url: '/teacher',
+    abstract: true,
+    templateUrl: 'templates/teacher-tabs.html'
+  }).state('teacher.home', {
+    url: '',
+    views: {
+      'teacher-home': {
+        controller: 'TeacherHomeCtrl',
+        templateUrl: "templates/teacher-home.html"
+      }
+    }
+  }).state('teacher.courseList', {
+    url: '/course',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherCourseListCtrl',
+        templateUrl: "templates/teacher-course-list.html"
+      }
+    }
+  }).state('teacher.courseChapter', {
+    url: '/course/chapter',
+    abstract: true
+  }).state('teacher.courseChapterList', {
+    url: '/course/chapter/:id',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterListCtrl',
+        templateUrl: "templates/teacher-chapter-list.html"
+      }
+    }
+  }).state('teacher.courseChapterCreate', {
+    url: '/course/chapter/create',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterCreateCtrl',
+        templateUrl: "templates/teacher-chapter-create.html"
+      }
+    }
+  }).state('teacher.courseChapterContinue', {
+    url: '/course/chapter/create/:id',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterContinueCtrl',
+        templateUrl: "templates/teacher-chapter-create.html"
+      }
+    }
+  }).state('teacher.courseChapterEdit', {
+    url: '/course/chapter/edit/:id',
+    views: {
+      'teacher-course': {
+        controller: 'TeacherChapterEditCtrl',
+        templateUrl: "templates/teacher-chapter-edit.html"
+      }
+    }
   });
 
-  
+
   // if none of the above states are matched, use this as the fallback
+
   $urlRouterProvider.otherwise('/intro');
 
 });

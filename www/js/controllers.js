@@ -93,7 +93,7 @@ angular.module('ngantriApp.controllers', [])
             created: Date.now(),
             updated: Date.now()
         };
-        
+
         var regMercantFormRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
         regMercantFormRef.set(merchant_form);
         $window.location.href = ('#/home');
@@ -307,7 +307,7 @@ angular.module('ngantriApp.controllers', [])
 }).controller('ActiveListCtrl', function($scope, $rootScope, $firebase) {
   var regMerchantQueueRef = new Firebase($rootScope.baseUrl + 'merchant_data');
   $scope.merchantList = $firebase(regMerchantQueueRef);
-  
+
   $scope.$watch('merchantList', function (value) {
     regMerchantQueueRef.once("value", function(data) {
       $scope.lists = [];
@@ -320,7 +320,7 @@ angular.module('ngantriApp.controllers', [])
           }
         }
       }
-      
+
 
       // $scope.lists.forEach(function(a){
       //   console.log(a);
@@ -424,4 +424,22 @@ angular.module('ngantriApp.controllers', [])
      });
    };
 
+}).controller('TeacherHomeCtrl',function(){})
+
+.controller('TeacherCourseListCtrl',function($scope, $rootScope, $state, $firebase, $ionicPopup){
+  var courseList = new Firebase($rootScope.baseUrl + 'course_data');
+  $scope.courseList = $firebase(courseList);
+  if(typeof $scope.courseList === 'object'){
+    var alertPopup = $ionicPopup.alert({
+      title: 'Oops!',
+      template: 'Anda belum memiliki kursus sama sekali. Silahkan membuat yang baru.',
+      buttons: [{
+        type: 'button-positive',
+        text: 'Buat Baru'
+      }]
+    });
+    alertPopup.then(function(res) {
+     $state.go("teacher.courseChapterCreate")
+    });
+  }
 });
