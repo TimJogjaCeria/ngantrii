@@ -117,6 +117,15 @@ angular.module('ngantriApp.controllers', [])
               var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
               referral = rand.toUpperCase();
               role = 'Wali Murid';
+              //TODO ini kok ada ngeflat referral disini tho? harusnya terpusat!
+              var refReferral = new Firebase($rootScope.baseUrl + 'referral_code/' + referral);
+              refReferral.once("value", function(data){
+                refReferral.set({'user_id': userData.uid});
+              });
+            } else if(refer_by_user.role == 'Wali Murid'){
+              //Siswa ga bs mendaftarkan orang lain dengan referral code dirinya
+              role = 'Siswa';
+              referral = '';
             }
           }
           var user = {
@@ -143,7 +152,7 @@ angular.module('ngantriApp.controllers', [])
             if (role == 'Guru') {
               console.log('here');
               $state.go('registerschool');
-            }if (role == 'Wali Murid') {
+            }if (role == 'Wali Murid' || role == 'Siswa') {
               $rootScope.refer_by_user = refer_by_user;
               $state.go('showreferralinfo');
             }
