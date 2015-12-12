@@ -514,9 +514,10 @@ angular.module('ngantriApp.controllers', [])
 
 }).controller('TeacherHomeCtrl',function(){})
 
-.controller('TeacherCourseListCtrl',function($scope, $rootScope, $state, $ionicPopup){
-  $scope.courseList = new Firebase($rootScope.baseUrl + 'course_data');
-  if(typeof $scope.courseList === 'object'){
+.controller('TeacherCourseListCtrl',function($scope, $rootScope, $state, $ionicPopup, Course){
+  $scope.courseList = Course
+  console.log($scope.courseList)
+  if($scope.courseList.length <= 0){
     var alertPopup = $ionicPopup.alert({
       title: 'Oops!',
       template: 'Anda belum memiliki kursus sama sekali. Silahkan membuat yang baru.',
@@ -532,11 +533,19 @@ angular.module('ngantriApp.controllers', [])
 }).controller('TeacherChapterListCtrl', function(){
 
 })
-.controller('TeacherChapterCreateCtrl', function($scope, Course){
+.controller('TeacherChapterCreateCtrl', function($scope, Course, Chapter){
   $scope.course = Course
-  $scope.create = function(){
-    $scope.course.$add({user_id: window.localStorage['user_id']})
+  $scope.content = "sdas";
+  $scope.save = function(){
+    $scope.course.$add({user_id: window.localStorage['user_id']}).then(function(refCourse){
+      console.log(refCourse.key());
+      var course_id = refCourse.key();
+      Chapter(course_id).$add({content: $('.fr-view').html()}).then(function(refChapter){
+        console.log(refChapter);
+      })
+    })
   }
-}).controller('TeacherChapterDetectCtrl', function(){
+})
+.controller('TeacherChapterDetectCtrl', function(){
 
 });
