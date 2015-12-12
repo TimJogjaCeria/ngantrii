@@ -17,6 +17,7 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
 .factory('Course', ['$firebaseArray', function($firebaseArray) {
     var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
     return $firebaseArray(courseRef);
+}])
 .factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
   return $firebaseArray(userRef);
@@ -134,7 +135,6 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
         templateUrl: "templates/user.html"
       }
     }
-<<<<<<< HEAD
   }).state('home.balancestatus', {
     url: '/balanceuser',
     views: {
@@ -196,8 +196,6 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
   }).state('teacher.courseChapter.edit', {
     url: '/:course/:id',
     templateUrl: "templates/teacher-chapter-edit.html"
-=======
->>>>>>> 4ada0e6c7eda55558ea8ce94980076566576d3f6
   });
 
 
