@@ -3,9 +3,12 @@
     <div class="user-profile">
       <img class="img-circle" ng-src="http://ionicframework.com/img/docs/blue-album.jpg" />
       <h1 style="text-transform: uppercase">{{user.name}}</h1>
-      <div align="center"><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i> </div>
-      <div align="center">(Berdasarkan rating oleh 27 siswa)</div>
-        <h2>Kode referral: {{user.referral}}</h2>
+
+      <div ng-if="user.role == 'Guru'">
+        <div align="center"><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i> </div>
+        <div align="center">(Berdasarkan rating oleh 27 siswa)</div>
+      </div>
+      <h2>Kode referral: {{user.referral}}</h2>
       <div class="center">
         <button class="button button-small button-stable button-outline button-inline" ui-sref="intro" ng-click="sendReferralSms()">
           Kirim invitasi aplikasi ke orang tua murid
