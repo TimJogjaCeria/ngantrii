@@ -561,7 +561,9 @@ angular.module('ngantriApp.controllers', [])
   }
 })
 .controller('TeacherChapterDetectCtrl', function($scope, Chapter, $stateParams, Course){
-  $scope.chapters = Chapter($stateParams.course)
-  $scope.$apply()
-  console.log($scope.chapters)
+  var regUserDataRef = new Firebase("https://ngantri.firebaseio.com/course/" + $stateParams.course + "/chapter/");
+  regUserDataRef.once("value", function(data){
+    console.log(data)
+    $scope.chapters = data.val();
+  })
 });
