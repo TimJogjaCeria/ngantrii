@@ -1,0 +1,34 @@
+<ion-view title="Active">
+  <ion-content class="">
+    <div class="content ionic-pseudo">
+
+      <!-- <div class="list card"> -->
+
+        <div class="item item-avatar">
+          <img ng-src="{{data.image}}" />
+          <h2>{{data.name}}</h2>
+          <p><i class="ion-ios7-location"></i> {{data.address}}</p>
+          <button class="button button-icon icon ion-ios7-star-outline abs-right energized"></button>
+          <button class="button button-icon icon ion-ios7-star hide abs-right energized"></button>
+        </div>
+
+        <div class="item item-body">
+            
+          <h3 class="center current-queue stabled">Current Queue</h3>
+
+          <h1 class="big-number center">{{data.queue_now}}</h1>
+
+          <p class="slim-p center">Average time / queue: <span class="black">{{data.average_time}}3 min</span></p>
+
+          <div class="box-border button-ambil">
+            <h4 class="slim-h center positive">Your Queue Number</h4>
+            <h1 class="big-number margin-bottom center positive">{{available_number}}</h1>
+          </div>
+
+          <h3 class="slim-p center time-togo"><span class="balanced">-+ {{(available_number - data.queue_now) * 3}} min</span> to Go!</h3>
+
+      <!-- </div> -->
+
+    </div>
+  </ion-content>
+</ion-view>

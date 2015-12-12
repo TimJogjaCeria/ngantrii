@@ -1,0 +1,47 @@
+{
+  "name": "angular-froala",
+  "version": "2.0.3",
+  "authors": [
+    "Cameron Gallarno <cgallarno@gmail.com>",
+    "Stefan Neculai <stefan@froala.com>"
+  ],
+  "description": "Angular.js bindings for Froala WYSIWYG HTML rich text editor.",
+  "main": "src/angular-froala.js",
+  "keywords": [
+    "angular.js",
+    "froala",
+    "html",
+    "text",
+    "editor",
+    "wysiwyg",
+    "jquery-plugin",
+    "rich editor",
+    "rich text editor",
+    "rte",
+    "javascript",
+    "jquery"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "froala-wysiwyg-editor": "2.0.3",
+    "angular": ">=1.0"
+  },
+  "homepage": "https://github.com/froala/angular-froala",
+  "_release": "2.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.3",
+    "commit": "dd61230c3a24b606b45c36fe118b57ce37aa4b0c"
+  },
+  "_source": "git://github.com/froala/angular-froala.git",
+  "_target": "~2.0.3",
+  "_originalSource": "angular-froala",
+  "_direct": true
+}

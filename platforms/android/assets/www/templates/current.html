@@ -1,0 +1,25 @@
+<div class="bar bar-subheader search-queue">
+  <h2 class="title">
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input type="text" placeholder="Search">
+    </label>
+  </h2>
+</div>
+<ion-view title="Current">
+  <ion-content>
+    <div class="content ionic-pseudo has-header ionic-pseudo content-current">
+
+      <div class="list">
+
+        <a ng-repeat="l in lists" class="item item-thumbnail-left" ui-sref="home.active({id:l.id})">
+          <img src="http://ionicframework.com/img/docs/blue-album.jpg">
+          <h2>{{l.name}}</h2>
+          <p>{{l.address}}</p>
+        </a>
+
+      </div>
+
+    </div>
+  </ion-content>
+</ion-view>

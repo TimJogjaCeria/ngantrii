@@ -1,0 +1,27 @@
+<ion-view title="Informasi Sekolah" hide-back-button="true">
+    <ion-content>
+        <div class="content has-header">
+            <div class="list">
+                <label class="item item-input">
+                    <input type="text" placeholder="Nama sekolah" ng-model="teacher.school_name">
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="Longitude" ng-model="teacher.long">
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="Latitude" ng-model="teacher.lat">
+                </label>
+                <div></div>
+                <label class="item item-input">
+                    <input type="text" placeholder="Wali Kelas" ng-model="teacher.class_name">
+                </label>
+            </div>
+            <div class="padding">
+                <button class="button button-block button-positive" ng-click="createSchool()">Buat Sekolah</button>
+            </div>
+            <div class="center" align="left">
+                Ketikkan nama sekolah, maka sistem akan mencari pada basis data yang sudah ada. Jika belum ada, Anda dapat menambahkan sendiri.
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

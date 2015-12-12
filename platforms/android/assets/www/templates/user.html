@@ -1,0 +1,26 @@
+<ion-view title="Profile">
+  <ion-content class="padding" ng-controller="UserCtrl">
+    <div class="user-profile">
+      <img class="img-circle" ng-src="http://ionicframework.com/img/docs/blue-album.jpg" />
+      <h1>{{user.name}}</h1>
+      <div class="status-balance row">
+        <div class="pull-left">
+          Balance
+        </div>
+        <div class="pull-right pink-color">
+          {{user.poin}} point
+        </div>
+      </div>
+      <button ui-sref="home.buypoint" class="button button-light button-block">
+        <div class="pull-left">
+          <i class="ion-bag"></i>&nbsp;&nbsp;&nbsp;Add More Point
+        </div>
+        <i class="ion-ios7-arrow-right pull-right"></i>
+      </button>
+
+      <button class="button button-light button-logout" ng-click="logoutConfirm()">
+        Log Out
+      </button>
+    </div>
+  </ion-content>
+</ion-view>

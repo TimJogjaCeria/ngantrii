@@ -7897,7 +7897,7 @@ ion-nav-view {
   border-bottom: 1px solid #ddd; }
 
 .tabs {
-  padding-top: 7px; }
+  padding-top: 0; }
 
 .card {
   margin: 0; }
@@ -8006,3 +8006,7 @@ ion-nav-view {
   font-size: 14px;
   line-height: 32px;
   margin-right: 15px; }
+
+.form-confirm{
+  margin-top: 20px;
+}
