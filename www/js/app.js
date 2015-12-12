@@ -17,6 +17,9 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
 .factory('Course', ['$firebaseArray', function($firebaseArray) {
     var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
     return $firebaseArray(courseRef);
+.factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
+  var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
+  return $firebaseArray(userRef);
 }])
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
     $ionicPlatform.ready(function() {
@@ -108,6 +111,10 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
       url: '/registerschool',
       templateUrl: 'templates/choose_school.html',
       controller: 'ChooseSchoolCtrl'
+  }).state('showreferralinfo', {
+      url: '/showreferralinfo',
+      templateUrl: 'templates/show_referralinfo.html',
+      controller: 'ShowReferralInfoCtrl'
   }).state('home', {
     url: '/home',
     abstract: true,
@@ -120,31 +127,6 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
         templateUrl: "templates/home.html"
       }
     }
-  }).state('home.queue', {
-    url: '/queue/:id',
-    controller: 'QueueCtrl',
-    views: {
-      'home-tab': {
-        controller: 'QueueCtrl',
-        templateUrl: "templates/queue.html"
-      }
-    }
-  }).state('home.current', {
-    url: '/current',
-    views: {
-      'current-tab': {
-        controller: 'ActiveListCtrl',
-        templateUrl: "templates/current.html"
-      }
-    }
-  }).state('home.active', {
-    url: '/active/:id',
-    views: {
-      'current-tab': {
-        controller: 'ActiveCtrl',
-        templateUrl: "templates/active.html"
-      }
-    }
   }).state('home.user', {
     url: '/user',
     views: {
@@ -152,6 +134,7 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
         templateUrl: "templates/user.html"
       }
     }
+<<<<<<< HEAD
   }).state('home.balancestatus', {
     url: '/balanceuser',
     views: {
@@ -213,6 +196,8 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
   }).state('teacher.courseChapter.edit', {
     url: '/:course/:id',
     templateUrl: "templates/teacher-chapter-edit.html"
+=======
+>>>>>>> 4ada0e6c7eda55558ea8ce94980076566576d3f6
   });
 
 

@@ -71,7 +71,7 @@ angular.module('ngantriApp.controllers', [])
   }
 })
 
-.controller('RegCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window, $firebaseObject, User) {
+.controller('RegCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window, $firebaseObject, User, ReferralCode) {
       $scope.toIntro = function () {
         window.localStorage['didTutorial'] = "false";
         $state.go('intro');
@@ -101,24 +101,62 @@ angular.module('ngantriApp.controllers', [])
           $rootScope.hide();
           console.log("User " + userData.uid + " created successfully!");
 
+        //check who refer this user, and possibly fill its school information
+        //TODO: how to make the referral code unique. Simple: use phone number
+          var refer_by_user = null;
+          var role = 'Guru';
+
+          //now change the role here
+          if(referral != ''){
+            var user_by_referral = ReferralCode.$getRecord(referral);
+            var refer_by_user = User.$getRecord(user_by_referral.user_id);
+
+            //then the user is ortu
+            if(refer_by_user.role == 'Guru')
+            {
+              //ortu stil has their own referral code to be passed to their kids
+              var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
+              referral = rand.toUpperCase();
+              role = 'Wali Murid';
+              //TODO ini kok ada ngeflat referral disini tho? harusnya terpusat!
+              var refReferral = new Firebase($rootScope.baseUrl + 'referral_code/' + referral);
+              refReferral.once("value", function(data){
+                refReferral.set({'user_id': userData.uid});
+              });
+            } else if(refer_by_user.role == 'Wali Murid'){
+              //Siswa ga bs mendaftarkan orang lain dengan referral code dirinya
+              role = 'Siswa';
+              referral = '';
+            }
+          }
           var user = {
             name: name,
             phone: phone,
             referral: referral,
+            role: role,
             created: Date.now(),
             updated: Date.now()
 
           };
 
+          console.log('role');
+          console.log(role);
+
           var refUserData = new Firebase($rootScope.baseUrl + 'user_data/' + userData.uid);
           refUserData.once("value", function(data){
             refUserData.set(user);
             var data = data.val();
+            //TODO: this is after login action. We only set logged user.uid (from auth)
             window.localStorage['user_id'] = refUserData.key();
-            if (referral == '') {
-              $window.location.href = ('#/registerschool');
-            } else {
-              $window.location.href = ('#/home');
+            console.log('role2');
+            console.log(role);
+
+            if (role == 'Guru') {
+              console.log('here');
+              $state.go('registerschool');
+            }if (role == 'Wali Murid' || role == 'Siswa') {
+              $rootScope.refer_by_user = refer_by_user;
+              $state.go('showreferralinfo');
             }
           });
         }, function (error) {
@@ -133,6 +171,11 @@ angular.module('ngantriApp.controllers', [])
         })
       }
     })
+
+  .controller('ShowReferralInfoCtrl', function($scope, $rootScope){
+    $scope.refer_by_user = $rootScope.refer_by_user;
+  })
+
 .controller('ChooseSchoolCtrl', function($scope, $log, $rootScope, $state, School, User) {
   $log.info('ChooseSchoolCtrl');
   $scope.userChooseSchool = {
@@ -144,6 +187,7 @@ angular.module('ngantriApp.controllers', [])
 
   $scope.schools = School;
 
+  //TODO only called when teacher/parent register
   $scope.createSchool = function() {
     var school_name = this.userChooseSchool.school_name;
     var class_name = this.userChooseSchool.class_name;
@@ -159,16 +203,23 @@ angular.module('ngantriApp.controllers', [])
       var user_id = window.localStorage['user_id'];
       var school_id = refSchool.key();
 
-      //associate user with school
+      //associate teacher with school
       var user = User.$getRecord(user_id);
       user.school_id = school_id;
+      //TODO make this into function
       var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
       user.referral = rand.toUpperCase();
-      user.role = 'teacher'; // <== HERE!
+      user.role = 'Guru'; // <== TODO  mungkin ga manfaat, dihapus bisa sepertinya
       User.$save(user);
       window.localStorage['user_role'] = user.role;
       window.localStorage['user_referral'] = user.referral;
       $rootScope.hide();
+
+      //TODO Flattened user key and referral
+      var refReferral = new Firebase($rootScope.baseUrl + 'referral_code/' + user.referral);
+      refReferral.once("value", function(data){
+        refReferral.set({'user_id': user_id});
+      });
       $state.go('home.home');
     });
   }

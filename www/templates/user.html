@@ -3,13 +3,26 @@
     <div class="user-profile">
       <img class="img-circle" ng-src="http://ionicframework.com/img/docs/blue-album.jpg" />
       <h1 style="text-transform: uppercase">{{user.name}}</h1>
-      <div align="center"><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i> </div>
-      <div align="center">(Berdasarkan rating oleh 27 siswa)</div>
+
+      <div ng-if="user.role == 'Guru'">
+        <div align="center"><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i><i class="icon ion-star"></i> </div>
+        <div align="center">(Berdasarkan rating oleh 27 siswa)</div>
+      </div>
+      <div ng-if="user.role != 'Siswa'">
         <h2>Kode referral: {{user.referral}}</h2>
-      <div class="center">
-        <button class="button button-small button-stable button-outline button-inline" ui-sref="intro" ng-click="sendReferralSms()">
-          Kirim invitasi aplikasi ke orang tua murid
-        </button>
+      </div>
+      <div ng-if="user.role == 'Siswa'">
+        <div align="center">
+          Kamu sudah mencatatkan waktu belajar mandiri sebanyak total 116jam! Untuk minggu ini kamu sudah mencatatkan waktu belajar mandiri sebanyak 7.5jam. Lanjutgan!
+        </div>
+      </div>
+      <div ng-if="user.role != 'Siswa'">
+
+        <div class="center">
+          <button class="button button-small button-stable button-outline button-inline" ui-sref="intro" ng-click="sendReferralSms()">
+            Kirim invitasi aplikasi ke orang tua murid
+          </button>
+        </div>
       </div>
 
       <button class="button button-light button-logout" ng-click="logoutConfirm()">
