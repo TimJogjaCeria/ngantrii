@@ -136,7 +136,6 @@ angular.module('ngantriApp.controllers', [])
             role: role,
             created: Date.now(),
             updated: Date.now()
-
           };
 
           console.log('role');
@@ -224,213 +223,29 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-.controller('HomeCtrl', function($scope, $rootScope) {
-  console.log('HomeCtrl created');
-  $scope.user_role = window.localStorage['user_role'];
-  $scope.user_referral = window.localStorage['user_referral'];
-
-    })
-.controller('QueueCtrl', function($scope, $state, $rootScope, $stateParams, $ionicPopup, $timeout) {
-  $scope.merchantData = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id);
-  $scope.$watch('merchantData', function (value) {
-    regMerchantDataRef.once("value", function(data) {
-      $scope.data = data.val();
-      for (var k in $scope.data.user) {
-          var v = $scope.data.user[k];
-          if(v.user_id===window.localStorage['user_id']) {
-            $state.go('home.home');
-          }
-      }
+  .controller('HomeCtrl', function($scope, $rootScope, $firebase, SyncService) {
+    console.log('HomeCtrl created');
+    var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
+    regUserDataRef.once("value", function(data){
+      $scope.user = data.val();
     });
-  }, true);
 
-  var regMerchantQueueRef = new Firebase($rootScope.baseUrl + 'merchant_queue/'+$stateParams.id);
-  $scope.merchantQueue = $firebase(regMerchantQueueRef);
-  $scope.$watch('merchantQueue', function (value) {
-    regMerchantQueueRef.once("value", function(data) {
-      total = 1;
-      data.forEach(function(a){
-        total++;
+    $scope.syncMataPelajaranAktif = function(){
+      SyncService.getMataPelajaranAktif().then(function(resp){
+        console.log(resp.data.data);
+        var matpel_aktif = resp.data.data;
+        matpel_aktif.forEach(function(matpel){
+          console.log('matpel');
+          console.log(matpel);
+          var regUserDataRef = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + matpel.id);
+          regUserDataRef.once("value", function(data){
+            regUserDataRef.set(matpel);
+          });
+        })
+        $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
-      $scope.available_number = total;
-    });
-  }, true);
-
-  var regRecordRef = new Firebase($rootScope.baseUrl + 'queue_record/'+$stateParams.id);
-  $scope.queueRecord = $firebase(regRecordRef);
-  $scope.$watch('queueRecord', function (value) {
-    regRecordRef.once("value", function(data) {
-      total = 0;
-      total_time = 0;
-      data.forEach(function(a){
-        total_time = a.val().created_at;
-        total++;
-      });
-      av = total_time/total;
-    });
-  }, true);
-
-
-
- // Triggered on a button click, or some other target
- $scope.showPopup = function() {
-   $scope.data = {}
-
-   // An elaborate, custom popup
-   var myPopup = $ionicPopup.show({
-     template: '<input type="password" ng-model="data.wifi">',
-     title: 'Enter Wi-Fi Password',
-     subTitle: 'Please use normal things',
-     scope: $scope,
-     buttons: [
-       { text: 'Cancel' },
-       {
-         text: '<b>Save</b>',
-         type: 'button-positive',
-         onTap: function(e) {
-           if (!$scope.data.wifi) {
-             //don't allow the user to close unless he enters wifi password
-             e.preventDefault();
-           } else {
-             return $scope.data.wifi;
-           }
-         }
-       },
-     ]
-   });
-   myPopup.then(function(res) {
-     console.log('Tapped!', res);
-   });
-   $timeout(function() {
-      myPopup.close(); //close the popup after 3 seconds for some reason
-   }, 3000);
-  };
-   // A confirm dialog
-   $scope.takeQueue = function() {
-     var confirmPopup = $ionicPopup.confirm({
-       title: 'Take The Number',
-       template: 'Are you sure you want to redeem 2 points to take this queue number?'
-     });
-     confirmPopup.then(function(res) {
-       if(res) {
-         $scope.successTakeQueue();
-       } else {
-         console.log('You are not sure');
-       }
-     });
-   };
-
-   // An alert dialog
-   $scope.successTakeQueue = function() {
-    regMerchantQueueRef.once("value", function(data) {
-      total = 1;
-      data.forEach(function(a){
-        total++;
-      })
-      formQueue = {
-        "queue" : total,
-        "name" : "Guest" + total
-      };
-      regMerchantQueueRef.push(formQueue);
-      var inputMerchantData = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id+'/user');
-      inputMerchantData.push({user_id: window.localStorage['user_id'],queue_number: total });
-    });
-    var alertPopup = $ionicPopup.alert({
-      title: 'Success!',
-      template: 'You’ve taken queue number 3',
-      buttons: [{
-       type: 'button-positive',
-       text: 'Back'
-      }]
-    });
-    alertPopup.then(function(res) {
-      console.log('Thank you for not eating my delicious ice cream cone');
-    });
-   };
-
-   $scope.failTakeQueue = function() {
-     var alertPopup = $ionicPopup.alert({
-       title: 'Oops!',
-       template: 'You can’t take this number.',
-       buttons: [{
-        type: 'button-positive',
-        text: 'Back'
-       }]
-     });
-     alertPopup.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
-     });
-   };
-
-   // A confirm dialog
-   $scope.showFinish = function() {
-     var confirmPopup = $ionicPopup.confirm({
-       title: 'Finish your job today?',
-       template: ''
-     });
-     confirmPopup.then(function(res) {
-       if(res) {
-         console.log('You are sure');
-         $scope.showGreat();
-       } else {
-         console.log('You are not sure');
-       }
-     });
-   };
-
-   // An alert great job
-   $scope.showGreat = function() {
-     var alertPopup = $ionicPopup.alert({
-       title: 'You did wonderful job!<br>Congrats!',
-       template: '',
-       buttons: [{
-        type: 'button-positive',
-        text: 'Go to Home'
-       }]
-     });
-     alertPopup.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
-     });
-   };
-
-}).controller('ActiveListCtrl', function($scope, $rootScope, $firebase) {
-  $scope.merchantList = new Firebase($rootScope.baseUrl + 'merchant_data');
-  $scope.$watch('merchantList', function (value) {
-    regMerchantQueueRef.once("value", function(data) {
-      $scope.lists = [];
-      for (var k in data.val()) {
-        var v = data.val()[k];
-        for (var k1 in v.user) {
-          var v1 = v.user[k1];
-          if(v1.user_id === window.localStorage['user_id']) {
-            $scope.lists.push({id: k,name: v.name,address: v.address});
-          }
-        }
-      }
-
-
-      // $scope.lists.forEach(function(a){
-      //   console.log(a);
-      // });
-    });
-  }, true);
-}).controller('ActiveCtrl', function($scope, $state, $rootScope, $stateParams, $firebase, $ionicPopup, $timeout) {
-  var regMerchantDataRef = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id);
-  $scope.merchantData = $firebase(regMerchantDataRef);
-  $scope.$watch('merchantData', function (value) {
-    regMerchantDataRef.once("value", function(data) {
-      $scope.data = data.val();
-      for (var k in $scope.data.user) {
-        var v = $scope.data.user[k];
-        if(v.user_id === window.localStorage['user_id']) {
-          $scope.available_number = v.queue_number;
-        }
-      }
-    });
-  }, true);
-
-}).controller('UserCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $firebase){
-})
+    }
+  })
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
   regUserDataRef.once("value", function(data){
@@ -567,3 +382,4 @@ angular.module('ngantriApp.controllers', [])
     $scope.chapters = data.val();
   })
 });
+
