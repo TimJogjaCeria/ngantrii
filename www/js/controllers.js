@@ -223,7 +223,7 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-  .controller('HomeCtrl', function($scope, $rootScope, $firebase, SyncService) {
+  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
     console.log('HomeCtrl created');
 
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
@@ -231,12 +231,12 @@ angular.module('ngantriApp.controllers', [])
       $scope.user = data.val();
     });
 
-    var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/');
+    var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif');
     refMatpelAktif.once("value", function(data){
-      $scope.matpel = data.val();
-      console.log($scope.matpel);
+      $scope.matapelajaran = data.val();
+      $scope.textipad = 'iPad';
+      $scope.$apply();
     });
-
 
     //TODO Pisahkan antara guru siswa dan ortu
     $scope.syncMataPelajaranAktif = function(){
@@ -253,6 +253,10 @@ angular.module('ngantriApp.controllers', [])
         })
         $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
+    }
+
+    $scope.doRefresh = function() {
+      console.log('refresh');
     }
 
     $scope.trackMatpel = function(matpel_id){
