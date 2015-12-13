@@ -43,17 +43,19 @@ angular.module('ngantriApp.controllers', [])
       password: password
     }).then(function(user) {
       $rootScope.hide();
-      var user_login = User.$getRecord(user.uid);
-      // $log.info('login ' + user_login.uid + ', role ' + user_login.role);
-      // user authenticated with Firebase
-      window.localStorage['user_id'] = user.uid;
-      window.localStorage['user_role'] = user.role
-      window.localStorage['user_referral'] = user.referral;
 
-      $scope.user_role = window.localStorage['user_role'];
-      $scope.user_referral = window.localStorage['user_referral'];
+      console.log(user);
+      console.log('user.uid' + user.uid);
+      var user_login = new Firebase($rootScope.baseUrl + 'user_data/' + user.uid);//$scope.users.$getRecord(refUser.$id);
+      user_login.once("value", function(data) {
+        // user authenticated with Firebase
+        var user_login_data = data.val();
+        console.log('user-Login');
+        console.log(user_login_data);
+        window.localStorage['user_id'] = user.uid;
+        $state.go('home.home');
+      });
 
-      $state.go('home.home');
     }, function(error) {
       $rootScope.hide();
       if (error.code == 'INVALID_EMAIL') {
@@ -69,7 +71,7 @@ angular.module('ngantriApp.controllers', [])
   }
 })
 
-.controller('RegCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window) {
+.controller('RegCtrl', function($scope, $state, $rootScope, $firebaseAuth, $window, $firebaseObject, User, ReferralCode) {
       $scope.toIntro = function () {
         window.localStorage['didTutorial'] = "false";
         $state.go('intro');
@@ -98,27 +100,64 @@ angular.module('ngantriApp.controllers', [])
         $rootScope.auth.$createUser({'email':email, 'password':password}).then(function (userData) {
           $rootScope.hide();
           console.log("User " + userData.uid + " created successfully!");
-          window.localStorage['user_id'] = userData.uid;
-          window.localStorage['merchantName'] = name;
 
-          var userData = {
+        //check who refer this user, and possibly fill its school information
+        //TODO: how to make the referral code unique. Simple: use phone number
+          var refer_by_user = null;
+          var role = 'Guru';
+
+          //now change the role here
+          if(referral != ''){
+            var user_by_referral = ReferralCode.$getRecord(referral);
+            var refer_by_user = User.$getRecord(user_by_referral.user_id);
+
+            //then the user is ortu
+            if(refer_by_user.role == 'Guru')
+            {
+              //ortu stil has their own referral code to be passed to their kids
+              var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
+              referral = rand.toUpperCase();
+              role = 'Wali Murid';
+              //TODO ini kok ada ngeflat referral disini tho? harusnya terpusat!
+              var refReferral = new Firebase($rootScope.baseUrl + 'referral_code/' + referral);
+              refReferral.once("value", function(data){
+                refReferral.set({'user_id': userData.uid});
+              });
+            } else if(refer_by_user.role == 'Wali Murid'){
+              //Siswa ga bs mendaftarkan orang lain dengan referral code dirinya
+              role = 'Siswa';
+              referral = '';
+            }
+          }
+          var user = {
             name: name,
             phone: phone,
             referral: referral,
+            role: role,
             created: Date.now(),
             updated: Date.now()
-
           };
 
-          var refUserData = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
-          refUserData.set(userData);
+          console.log('role');
+          console.log(role);
 
-          if (referral == '') {
-            console.log('here');
-            $window.location.href = ('#/registerschool');
-          } else {
-            $window.location.href = ('#/home');
-          }
+          var refUserData = new Firebase($rootScope.baseUrl + 'user_data/' + userData.uid);
+          refUserData.once("value", function(data){
+            refUserData.set(user);
+            var data = data.val();
+            //TODO: this is after login action. We only set logged user.uid (from auth)
+            window.localStorage['user_id'] = refUserData.key();
+            console.log('role2');
+            console.log(role);
+
+            if (role == 'Guru') {
+              console.log('here');
+              $state.go('registerschool');
+            }if (role == 'Wali Murid' || role == 'Siswa') {
+              $rootScope.refer_by_user = refer_by_user;
+              $state.go('showreferralinfo');
+            }
+          });
         }, function (error) {
           $rootScope.hide();
           if (error.code == 'INVALID_EMAIL') {
@@ -131,9 +170,14 @@ angular.module('ngantriApp.controllers', [])
         })
       }
     })
+
+  .controller('ShowReferralInfoCtrl', function($scope, $rootScope){
+    $scope.refer_by_user = $rootScope.refer_by_user;
+  })
+
 .controller('ChooseSchoolCtrl', function($scope, $log, $rootScope, $state, School, User) {
   $log.info('ChooseSchoolCtrl');
-  $scope.teacher = {
+  $scope.userChooseSchool = {
     school_name: "",
     long: "",
     lat: "",
@@ -142,11 +186,12 @@ angular.module('ngantriApp.controllers', [])
 
   $scope.schools = School;
 
+  //TODO only called when teacher/parent register
   $scope.createSchool = function() {
-    var school_name = this.teacher.school_name;
-    var class_name = this.teacher.class_name;
-    var lat = this.teacher.lat;
-    var long = this.teacher.long;
+    var school_name = this.userChooseSchool.school_name;
+    var class_name = this.userChooseSchool.class_name;
+    var lat = this.userChooseSchool.lat;
+    var long = this.userChooseSchool.long;
 
     if (!school_name || !class_name) {
       $rootScope.notify("Please enter valid school information");
@@ -157,236 +202,108 @@ angular.module('ngantriApp.controllers', [])
       var user_id = window.localStorage['user_id'];
       var school_id = refSchool.key();
 
-      //associate user with school
+      //associate teacher with school
       var user = User.$getRecord(user_id);
       user.school_id = school_id;
+      //TODO make this into function
       var rand = "" + new Array(5).join().replace(/(.|$)/g, function(){return ((Math.random()*36)|0).toString(36);})
       user.referral = rand.toUpperCase();
-      user.role = 'teacher';
+      user.role = 'Guru'; // <== TODO  mungkin ga manfaat, dihapus bisa sepertinya
       User.$save(user);
       window.localStorage['user_role'] = user.role;
       window.localStorage['user_referral'] = user.referral;
       $rootScope.hide();
+
+      //TODO Flattened user key and referral
+      var refReferral = new Firebase($rootScope.baseUrl + 'referral_code/' + user.referral);
+      refReferral.once("value", function(data){
+        refReferral.set({'user_id': user_id});
+      });
       $state.go('home.home');
     });
-
-
-    }
+  }
 })
-.controller('HomeCtrl', function($scope, $rootScope) {
-  console.log('HomeCtrl created');
-  $scope.user_role = window.localStorage['user_role'];
-  $scope.user_referral = window.localStorage['user_referral'];
+  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
+    console.log('HomeCtrl created');
 
-    })
-.controller('QueueCtrl', function($scope, $state, $rootScope, $stateParams, $ionicPopup, $timeout) {
-  $scope.merchantData = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id);
-  $scope.$watch('merchantData', function (value) {
-    regMerchantDataRef.once("value", function(data) {
-      $scope.data = data.val();
-      for (var k in $scope.data.user) {
-          var v = $scope.data.user[k];
-          if(v.user_id===window.localStorage['user_id']) {
-            $state.go('home.home');
-          }
-      }
+    var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
+    regUserDataRef.once("value", function(data){
+      $scope.user = data.val();
     });
-  }, true);
 
-  var regMerchantQueueRef = new Firebase($rootScope.baseUrl + 'merchant_queue/'+$stateParams.id);
-  $scope.merchantQueue = $firebase(regMerchantQueueRef);
-  $scope.$watch('merchantQueue', function (value) {
-    regMerchantQueueRef.once("value", function(data) {
-      total = 1;
-      data.forEach(function(a){
-        total++;
+    var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif');
+    refMatpelAktif.once("value", function(data){
+      $scope.matapelajaran = data.val();
+      $scope.$apply();
+    });
+
+    //TODO Pisahkan antara guru siswa dan ortu
+    $scope.syncMataPelajaranAktif = function(){
+      SyncService.getMataPelajaranAktif().then(function(resp){
+        console.log(resp.data.data);
+        var matpel_aktif = resp.data.data;
+        matpel_aktif.forEach(function(matpel){
+          console.log('matpel');
+          console.log(matpel);
+          var regUserDataRef = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + matpel.id);
+          regUserDataRef.once("value", function(data){
+            regUserDataRef.set(matpel);
+          });
+        })
+        $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
-      $scope.available_number = total;
-    });
-  }, true);
+    }
 
-  var regRecordRef = new Firebase($rootScope.baseUrl + 'queue_record/'+$stateParams.id);
-  $scope.queueRecord = $firebase(regRecordRef);
-  $scope.$watch('queueRecord', function (value) {
-    regRecordRef.once("value", function(data) {
-      total = 0;
-      total_time = 0;
-      data.forEach(function(a){
-        total_time = a.val().created_at;
-        total++;
+    $scope.doRefresh = function() {
+      console.log('refresh');
+    }
+
+    $scope.trackMatpel = function(matpel_id){
+      console.log('matpel_id');
+      console.log(matpel_id);
+      $state.go('tracktime', {'id': matpel_id});
+    }
+
+  })
+.controller('TrackTime', function($scope, $rootScope, $state, $stateParams){
+    console.log('TrackTime');
+
+    $scope.timerRunning = true;
+    $scope.matpel_id = $stateParams.id;
+
+    $scope.startTrack = function (){
+      $scope.$broadcast('timer-start');
+      $scope.timerRunning = true;
+    };
+
+    $scope.stopTrack = function (){
+      $scope.$broadcast('timer-stop');
+      $scope.timerRunning = false;
+    };
+
+    $scope.$on('timer-stopped', function (event, data){
+      console.log('Timer Stopped - data = ', data);
+      var refTrackTime = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + $scope.matpel_id);
+      refTrackTime.once("value", function(trackTime){
+        var existing_data = trackTime.val();
+        existing_data.total_time = data; //TODO only last value saved, not accumulated
+        console.log('existing_data');
+        console.log(existing_data);
+
+        refTrackTime.set(existing_data);
+        $rootScope.notify('Terimakasih ya sudah belajar selama ' + data.hours + ' jam, ' + data.minutes + ' menit, ' + data.seconds + ' detik. :)');
+        $state.go('home.home');
       });
-      av = total_time/total;
     });
-  }, true);
-
-
-
- // Triggered on a button click, or some other target
- $scope.showPopup = function() {
-   $scope.data = {}
-
-   // An elaborate, custom popup
-   var myPopup = $ionicPopup.show({
-     template: '<input type="password" ng-model="data.wifi">',
-     title: 'Enter Wi-Fi Password',
-     subTitle: 'Please use normal things',
-     scope: $scope,
-     buttons: [
-       { text: 'Cancel' },
-       {
-         text: '<b>Save</b>',
-         type: 'button-positive',
-         onTap: function(e) {
-           if (!$scope.data.wifi) {
-             //don't allow the user to close unless he enters wifi password
-             e.preventDefault();
-           } else {
-             return $scope.data.wifi;
-           }
-         }
-       },
-     ]
-   });
-   myPopup.then(function(res) {
-     console.log('Tapped!', res);
-   });
-   $timeout(function() {
-      myPopup.close(); //close the popup after 3 seconds for some reason
-   }, 3000);
-  };
-   // A confirm dialog
-   $scope.takeQueue = function() {
-     var confirmPopup = $ionicPopup.confirm({
-       title: 'Take The Number',
-       template: 'Are you sure you want to redeem 2 points to take this queue number?'
-     });
-     confirmPopup.then(function(res) {
-       if(res) {
-         $scope.successTakeQueue();
-       } else {
-         console.log('You are not sure');
-       }
-     });
-   };
-
-   // An alert dialog
-   $scope.successTakeQueue = function() {
-    regMerchantQueueRef.once("value", function(data) {
-      total = 1;
-      data.forEach(function(a){
-        total++;
-      })
-      formQueue = {
-        "queue" : total,
-        "name" : "Guest" + total
-      };
-      regMerchantQueueRef.push(formQueue);
-      var inputMerchantData = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id+'/user');
-      inputMerchantData.push({user_id: window.localStorage['user_id'],queue_number: total });
-    });
-    var alertPopup = $ionicPopup.alert({
-      title: 'Success!',
-      template: 'You’ve taken queue number 3',
-      buttons: [{
-       type: 'button-positive',
-       text: 'Back'
-      }]
-    });
-    alertPopup.then(function(res) {
-      console.log('Thank you for not eating my delicious ice cream cone');
-    });
-   };
-
-   $scope.failTakeQueue = function() {
-     var alertPopup = $ionicPopup.alert({
-       title: 'Oops!',
-       template: 'You can’t take this number.',
-       buttons: [{
-        type: 'button-positive',
-        text: 'Back'
-       }]
-     });
-     alertPopup.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
-     });
-   };
-
-   // A confirm dialog
-   $scope.showFinish = function() {
-     var confirmPopup = $ionicPopup.confirm({
-       title: 'Finish your job today?',
-       template: ''
-     });
-     confirmPopup.then(function(res) {
-       if(res) {
-         console.log('You are sure');
-         $scope.showGreat();
-       } else {
-         console.log('You are not sure');
-       }
-     });
-   };
-
-   // An alert great job
-   $scope.showGreat = function() {
-     var alertPopup = $ionicPopup.alert({
-       title: 'You did wonderful job!<br>Congrats!',
-       template: '',
-       buttons: [{
-        type: 'button-positive',
-        text: 'Go to Home'
-       }]
-     });
-     alertPopup.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
-     });
-   };
-
-}).controller('ActiveListCtrl', function($scope, $rootScope, $firebase) {
-  $scope.merchantList = new Firebase($rootScope.baseUrl + 'merchant_data');
-  $scope.$watch('merchantList', function (value) {
-    regMerchantQueueRef.once("value", function(data) {
-      $scope.lists = [];
-      for (var k in data.val()) {
-        var v = data.val()[k];
-        for (var k1 in v.user) {
-          var v1 = v.user[k1];
-          if(v1.user_id === window.localStorage['user_id']) {
-            $scope.lists.push({id: k,name: v.name,address: v.address});
-          }
-        }
-      }
-
-
-      // $scope.lists.forEach(function(a){
-      //   console.log(a);
-      // });
-    });
-  }, true);
-}).controller('ActiveCtrl', function($scope, $state, $rootScope, $stateParams, $firebase, $ionicPopup, $timeout) {
-  var regMerchantDataRef = new Firebase($rootScope.baseUrl + 'merchant_data/'+$stateParams.id);
-  $scope.merchantData = $firebase(regMerchantDataRef);
-  $scope.$watch('merchantData', function (value) {
-    regMerchantDataRef.once("value", function(data) {
-      $scope.data = data.val();
-      for (var k in $scope.data.user) {
-        var v = $scope.data.user[k];
-        if(v.user_id === window.localStorage['user_id']) {
-          $scope.available_number = v.queue_number;
-        }
-      }
-    });
-  }, true);
-
-}).controller('UserCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $firebase){
+  })
+.controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
-  $scope.user = {};
-  regUserDataRef.once("value", function(data) {
+  regUserDataRef.once("value", function(data){
     $scope.user = data.val();
-    console.log($scope.user);
   });
-
-
+  $scope.sendReferralSms = function() {
+    $cordovaSocialSharing.share('Halo, ini adalah invitasi untuk men-download aplikasi SayangJuara yang bisa di download di http://jadijuara.com. Gunakan kode referral ini saat registrasi ' + $rootScope.user.referral  +'. Salam hormat, ' + $rootScope.user.name);
+  }
   // A confirm dialog
    $scope.logoutConfirm = function() {
      var confirmPopup = $ionicPopup.confirm({
@@ -405,83 +322,4 @@ angular.module('ngantriApp.controllers', [])
        }
      });
    };
-
-}).controller('PointListCtrl', function($scope, $state, $rootScope, $window, $firebase, $ionicPopup, $timeout) {
-  var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
-  $scope.data = [
-    {point: 5, amount: 5000},
-    {point: 10, amount: 10000},
-    {point: 25, amount: 25000},
-    {point: 50, amount: 50000},
-    {point: 100, amount: 100000}
-  ];
-
-  // A confirm dialog
-   $scope.beliConfirm = function(amount) {
-
-     var confirmPopupBeli = $ionicPopup.confirm({
-       title: 'Are you sure?',
-       template: '',
-       cancelText: 'Cancel',
-       cancelType: '',
-       okText: 'Buy',
-       okType: 'button-positive'
-     });
-     confirmPopupBeli.then(function(res) {
-       if(res) {
-        regUserDataRef.once("value", function(data) {
-          dd = amount/1000;
-          poin_data = dd + data.val().poin;
-          form_data = {
-            "poin" : poin_data
-          };
-          // $scope.user.poin = poin_data;
-          regUserDataRef.update(form_data);
-          $scope.successBeliAlert(dd);
-        });
-       } else {
-         console.log('You are not sure');
-       }
-     });
-   };
-
-   // An alert dialog
-   $scope.successBeliAlert = function(poin) {
-     var alertPopupBeli = $ionicPopup.alert({
-       title: 'Congrat!',
-       template: 'Your point have been added '+poin+' points. To continue please send sms up spasi sms_code to 4499',
-       buttons: [{
-        type: 'button-positive',
-        text: 'OK'
-       }]
-     });
-     alertPopupBeli.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
-     });
-   };
-
-}).controller('TeacherHomeCtrl',function(){})
-
-.controller('TeacherCourseListCtrl',function($scope, $rootScope, $state, $ionicPopup){
-  $scope.courseList = new Firebase($rootScope.baseUrl + 'course_data');
-  if(typeof $scope.courseList === 'object'){
-    var alertPopup = $ionicPopup.alert({
-      title: 'Oops!',
-      template: 'Anda belum memiliki kursus sama sekali. Silahkan membuat yang baru.',
-      buttons: [{
-        type: 'button-positive',
-        text: 'Buat Baru'
-      }]
-    });
-    alertPopup.then(function(res) {
-     $state.go("teacher.courseChapterCreate")
-    });
-  }
-}).controller('TeacherChapterListCtrl', function(){
-
-})
-.controller('TeacherChapterCreateCtrl', function(){
-
-}).controller('TeacherChapterDetectCtrl', function(){
-
 });

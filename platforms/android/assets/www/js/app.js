@@ -3,7 +3,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.controllers'])
+
+angular.module('ngantriApp', ['ionic', 'timer', 'angular-humanize-duration', 'ngCordova', 'firebase', 'froala', 'ngantriApp.controllers'])
+
 .factory('School', ['$firebaseArray', function($firebaseArray) {
     var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
     return $firebaseArray(schoolRef);
@@ -12,6 +14,24 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
 }])
+//.factory('Course', ['$firebaseArray', function($firebaseArray) {
+//    var courseRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/mata_pelajaran/semester_aktif/');
+//    return $firebaseArray(courseRef);
+//}])
+.factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
+  var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
+  return $firebaseArray(userRef);
+}])
+.factory('SyncService', function($http, $log) {
+    $log.info('SyncMataPelajaranAktif Factory');
+    var url = 'https://raw.githubusercontent.com/TimJogjaCeria/sayangjuara-backend/master/matpel_semester_aktif.json';
+
+    return {
+      getMataPelajaranAktif: function () {
+        return $http.get(url);
+      }
+    }
+})
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -102,6 +122,10 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
       url: '/registerschool',
       templateUrl: 'templates/choose_school.html',
       controller: 'ChooseSchoolCtrl'
+  }).state('showreferralinfo', {
+      url: '/showreferralinfo',
+      templateUrl: 'templates/show_referralinfo.html',
+      controller: 'ShowReferralInfoCtrl'
   }).state('home', {
     url: '/home',
     abstract: true,
@@ -114,50 +138,11 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
         templateUrl: "templates/home.html"
       }
     }
-  }).state('home.queue', {
-    url: '/queue/:id',
-    controller: 'QueueCtrl',
-    views: {
-      'home-tab': {
-        controller: 'QueueCtrl',
-        templateUrl: "templates/queue.html"
-      }
-    }
-  }).state('home.current', {
-    url: '/current',
-    views: {
-      'current-tab': {
-        controller: 'ActiveListCtrl',
-        templateUrl: "templates/current.html"
-      }
-    }
-  }).state('home.active', {
-    url: '/active/:id',
-    views: {
-      'current-tab': {
-        controller: 'ActiveCtrl',
-        templateUrl: "templates/active.html"
-      }
-    }
   }).state('home.user', {
     url: '/user',
     views: {
       'user-tab': {
         templateUrl: "templates/user.html"
-      }
-    }
-  }).state('home.balancestatus', {
-    url: '/balanceuser',
-    views: {
-      'user-tab': {
-        templateUrl: "templates/balancestatus.html"
-      }
-    }
-  }).state('home.buypoint', {
-    url: '/buypoint',
-    views: {
-      'user-tab': {
-        templateUrl: "templates/buypoint.html"
       }
     }
   }).state('teacher', {
@@ -207,7 +192,13 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
   }).state('teacher.courseChapter.edit', {
     url: '/:course/:id',
     templateUrl: "templates/teacher-chapter-edit.html"
-  });
+  }).state('tracktime', {
+    url: '/tracktime/:id',
+    templateUrl: 'templates/track_time.html',
+    controller: 'TrackTime'
+  })
+
+  ;
 
 
   // if none of the above states are matched, use this as the fallback

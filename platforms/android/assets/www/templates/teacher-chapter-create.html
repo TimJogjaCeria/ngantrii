@@ -1,5 +1,9 @@
 <ion-view title="Buat Bab">
   <ion-content>
-    <textarea froala ng-model="myHtml"></textarea>
+    <textarea froala ng-model="content"></textarea>
+    <div class="form-confirm">
+      <button class="button button-positive col col-33 pull-left" ng-click="save()"><i class="fa fa-save"></i> Simpan</button>
+      <button class="button button-positive col col-33 pull-right" ng-click="create()">Lanjutan <i class="icon ion-ios7-arrow-right"></i><i class="icon ion-ios7-arrow-right"></i></button>
+    </div>
   </ion-content>
 </ion-view>
