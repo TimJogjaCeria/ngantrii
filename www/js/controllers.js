@@ -389,9 +389,11 @@ angular.module('ngantriApp.controllers', [])
   regUserDataRef.once("value", function(data){
     $scope.user = data.val();
   });
+
   $scope.sendReferralSms = function() {
-    $cordovaSocialSharing.share('Halo, ini adalah invitasi untuk men-download aplikasi SayangJuara yang bisa di download di http://jadijuara.com. Gunakan kode referral ini saat registrasi ' + $rootScope.user.referral  +'. Salam hormat, ' + $rootScope.user.name);
+    $cordovaSocialSharing.share('Halo, ini adalah invitasi untuk men-download aplikasi SayangJuara yang bisa di download di http://ekoswibowo.wordpress.com Gunakan kode referral ini saat registrasi ' + $scope.user.referral +'. Salam hormat, ' + $scope.user.name + ' - (SayangJuara)');
   }
+
   // A confirm dialog
    $scope.logoutConfirm = function() {
      var confirmPopup = $ionicPopup.confirm({
