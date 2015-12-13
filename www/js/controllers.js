@@ -228,7 +228,8 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
+  //TODO ini home nyampur tiga role. Harusnya dipisah2 dong
+  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, $cordovaDialogs, $cordovaSocialSharing, SyncService) {
     console.log('HomeCtrl created');
 
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
@@ -259,6 +260,17 @@ angular.module('ngantriApp.controllers', [])
       });
     }
 
+    $scope.broadcastPengumuman = function(){
+      console.log('Pengumuman');
+      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'OK'], '')
+        .then(function (result) {
+          if(result.buttonIndex == 2) {
+            $cordovaSocialSharing.share(result.input1);
+          }
+        }
+      );
+    }
+
     $scope.doRefresh = function() {
       console.log('refresh');
     }
@@ -266,8 +278,64 @@ angular.module('ngantriApp.controllers', [])
     $scope.trackMatpel = function(matpel_id){
       console.log('matpel_id');
       console.log(matpel_id);
+      $state.go('tracktime', {'id': matpel_id});
     }
 
+  })
+.controller('TrackTime', function($scope, $rootScope, $state, $stateParams){
+    console.log('TrackTime');
+
+    $scope.timerRunning = true;
+    $scope.matpel_id = $stateParams.id;
+
+    $scope.startTrack = function (){
+      $scope.$broadcast('timer-start');
+      $scope.timerRunning = true;
+    };
+
+    $scope.stopTrack = function (){
+      $scope.$broadcast('timer-stop');
+      $scope.timerRunning = false;
+    };
+
+    $scope.$on('timer-stopped', function (event, data){
+      console.log('Timer Stopped - data = ', data);
+      var refTrackTime = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + $scope.matpel_id);
+      refTrackTime.once("value", function(trackTime){
+        var existing_data = trackTime.val();
+        existing_data.total_time = data; //TODO only last value saved, not accumulated
+        console.log('existing_data');
+        console.log(existing_data);
+
+        refTrackTime.set(existing_data);
+        $rootScope.notify('Terimakasih ya sudah belajar selama ' + data.hours + ' jam, ' + data.minutes + ' menit, ' + data.seconds + ' detik. :)');
+        $state.go('home.home');
+      });
+    });
+
+    $scope.recordVoice = function(){
+      console.log('Record voice');
+      // capture callback
+      var captureSuccess = function(mediaFiles) {
+        var i, path, len;
+        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+          path = mediaFiles[i].fullPath;
+          // do something interesting with the file
+        }
+      };
+
+// capture error callback
+      var captureError = function(error) {
+        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+      };
+
+// start audio capture
+      navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
+    }
+
+    $scope.playAll = function() {
+      console.log('Play all recorded voice based on active course');
+    }
   })
 
 .controller('HomeCourseListCtrl',function($scope, $rootScope, $stateParams, Course, Users){

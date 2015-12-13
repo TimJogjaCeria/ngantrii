@@ -1,35 +1,62 @@
 <ion-view title="Home">
   <div ng-if="user.role == 'Guru'">
     <div class="content has-header">
-      <div class="center">
-        <button class="button button-small button-stable button-outline button-inline" ng-click="syncMataPelajaranAktif()">
+      <div style="margin-top: 10px;">
+      <img class="img-circle" ng-src="img/guru.png" />
+      </div>
+        <div class="list center" style="margin-left: 10px; margin-top: 10px;">
+        <button class="button button-stable button-small icon ion-loop" ng-click="syncMataPelajaranAktif()">
           Sync Mata Pelajaran Aktif
         </button>
-        <button class="button button-small button-stable button-outline button-inline" ng-click="syncHasilUlanganHarian()">
+        <button class="button button-stable button-small icon ion-loop" ng-click="syncHasilUlanganHarian()">
           Sync Hasil Ulangan Harian
         </button>
-        <button class="button button-small button-stable button-outline button-inline" ng-click="syncHasilUTS()">
+        <button class="button button-stable button-small icon ion-loop" ng-click="syncHasilUTS()">
           Sync Hasil UTS
         </button>
-        <button class="button button-small button-stable button-outline button-inline" ng-click="syncHasilUAS()">
+        <button class="button button-stable button-small icon ion-loop" ng-click="syncHasilUAS()">
           Sync Hasil UAS
         </button>
-        <button class="button button-small button-stable button-outline button-inline" ng-click="broadcastPengumuman()">
+        <button class="button button-stable button-small icon ion-speakerphone" ng-click="broadcastPengumuman()">
           Broadcast pengumuman
         </button>
+        </div>
       </div>
     </div>
   </div>
 
+  <div ng-if="user.role == 'Wali Murid'">
+    <div class="content has-header">
+      <div style="margin-top: 10px;">
+        <img class="img-circle" ng-src="img/ortu.png" />
+      </div>
+      <div class="list center" style="margin-left: 10px; margin-top: 10px;">
+        <button class="button button-stable button-small icon ion-ribbon-a" ng-click="setReward()">
+          Tentukan reward prestasi
+        </button>
+        <button class="button button-stable button-small icon ion-loop" ng-click="messageTeacher()">
+          Kirim pesan ke wali kelas
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
   <div ng-if="user.role == 'Siswa'">
-      <ion-content>
-        <ion-list>
+      <!--<ion-content>-->
+    <div class="content has-header">
+      <div style="margin-top: 10px;">
+        <img class="img-circle" ng-src="img/siswa.png" />
+      </div>
+        <!--<div class="list center" style="margin-left: 10px; margin-top: 10px;">-->
           <ion-item ng-repeat="matpel in matapelajaran">
-            <button class="button button-small button-stable button-outline button-inline">
-              {{matpel.nama}}
+            <button class="button button-stable button-small icon ion-clock" ng-click="trackMatpel(matpel.id)">
+              {{matpel.nama}} <span>{{matpel.total_time.hours}}h{{matpel.total_time.minutes}}m{{matpel.total_time.seconds}}s</span>
             </button>
             </ion-item>
-        </ion-list>
-      </ion-content>
+          <!--</div>-->
+      <!--</ion-content>-->
+    </div>
     </div>
 </ion-view>

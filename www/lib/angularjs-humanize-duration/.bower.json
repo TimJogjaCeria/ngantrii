@@ -1,0 +1,37 @@
+{
+  "name": "angularjs-humanize-duration",
+  "version": "0.0.1",
+  "description": "AngularJS filter for rendering human-readable durations.",
+  "main": "src/angular-humanize-duration.js",
+  "keywords": [
+    "humanize-duration",
+    "angular",
+    "filter",
+    "human-readable",
+    "duration",
+    "localization"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/sebastianhaas/angularjs-humanize-duration",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.5",
+    "humanize-duration": "~3.3.0"
+  },
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "0697f328be56781333a4851b32fa4386ba4cce29"
+  },
+  "_source": "git://github.com/sebastianhaas/angularjs-humanize-duration.git",
+  "_target": "~0.0.1",
+  "_originalSource": "angularjs-humanize-duration",
+  "_direct": true
+}
