@@ -53,16 +53,12 @@ angular.module('ngantriApp.controllers', [])
         console.log('user-Login');
         console.log(user_login_data);
         window.localStorage['user_id'] = user.uid;
-<<<<<<< HEAD
         if(user_login_data.role == "Guru" || user_login_data.role == "Wali Murid"){
           $state.go('teacher.home');
         }else{
           $state.go('home.home');
         }
 
-=======
-        $state.go('home.home');
->>>>>>> jadijuara
       });
 
     }, function(error) {
@@ -232,12 +228,8 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-<<<<<<< HEAD
-  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
-=======
   //TODO ini home nyampur tiga role. Harusnya dipisah2 dong
   .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, $cordovaDialogs, $cordovaSocialSharing, SyncService) {
->>>>>>> jadijuara
     console.log('HomeCtrl created');
 
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
@@ -250,83 +242,6 @@ angular.module('ngantriApp.controllers', [])
       $scope.matapelajaran = data.val();
       $scope.$apply();
     });
-<<<<<<< HEAD
-
-    //TODO Pisahkan antara guru siswa dan ortu
-    $scope.syncMataPelajaranAktif = function(){
-      SyncService.getMataPelajaranAktif().then(function(resp){
-        console.log(resp.data.data);
-        var matpel_aktif = resp.data.data;
-        matpel_aktif.forEach(function(matpel){
-          console.log('matpel');
-          console.log(matpel);
-          var regUserDataRef = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + matpel.id);
-          regUserDataRef.once("value", function(data){
-            regUserDataRef.set(matpel);
-          });
-        })
-        $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
-      });
-    }
-
-    $scope.doRefresh = function() {
-      console.log('refresh');
-    }
-
-    $scope.trackMatpel = function(matpel_id){
-      console.log('matpel_id');
-      console.log(matpel_id);
-    }
-
-  })
-
-.controller('HomeCourseListCtrl',function($scope, $rootScope, $stateParams, Course, Users){
-  $scope.courseList = [];
-  $scope.course = Course();
-
-  $scope.course.$loaded()
-    .then(function(){
-      angular.forEach($scope.course, function(l) {
-        var user = Users(l['user_id']);
-        user.$loaded().then(function(){
-          l['name'] = user['name']
-          $scope.courseList.push(l)
-        })
-      })
-    });
-
-  // var regUserDataRef = new Firebase($rootScope.baseUrl + 'course/');
-  // regUserDataRef.once("value", function(data){
-  //   for(i in data.val()){
-  //     console.log(i)
-  //   }
-  // });
-})
-
-.controller('HomeCourseDetailCtrl', function($scope, $stateParams, Chapters){
-  var chapter = Chapters($stateParams.course)
-  chapter.$loaded().then(function(){
-    $scope.chapter = chapter;
-    console.log(chapter.chapter)
-    i = 0
-    $.each(chapter.chapter, function(index, value) {
-        if(value.id==$stateParams.id){
-          $scope.content = value.content
-        }
-        i++;
-    });
-    id = parseInt($stateParams.id)
-
-    if(id < i){
-      $scope.next = id + 1
-    }else{
-      $scope.next = false
-    }
-    $scope.course_title = chapter.course_title;
-  })
-})
-
-=======
 
     //TODO Pisahkan antara guru siswa dan ortu
     $scope.syncMataPelajaranAktif = function(){
@@ -347,7 +262,7 @@ angular.module('ngantriApp.controllers', [])
 
     $scope.broadcastPengumuman = function(){
       console.log('Pengumuman');
-      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'Add'], '')
+      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'OK'], '')
         .then(function (result) {
           if(result.buttonIndex == 2) {
             $cordovaSocialSharing.share(result.input1);
@@ -422,7 +337,53 @@ angular.module('ngantriApp.controllers', [])
       console.log('Play all recorded voice based on active course');
     }
   })
->>>>>>> jadijuara
+
+.controller('HomeCourseListCtrl',function($scope, $rootScope, $stateParams, Course, Users){
+  $scope.courseList = [];
+  $scope.course = Course();
+
+  $scope.course.$loaded()
+    .then(function(){
+      angular.forEach($scope.course, function(l) {
+        var user = Users(l['user_id']);
+        user.$loaded().then(function(){
+          l['name'] = user['name']
+          $scope.courseList.push(l)
+        })
+      })
+    });
+
+  // var regUserDataRef = new Firebase($rootScope.baseUrl + 'course/');
+  // regUserDataRef.once("value", function(data){
+  //   for(i in data.val()){
+  //     console.log(i)
+  //   }
+  // });
+})
+
+.controller('HomeCourseDetailCtrl', function($scope, $stateParams, Chapters){
+  var chapter = Chapters($stateParams.course)
+  chapter.$loaded().then(function(){
+    $scope.chapter = chapter;
+    console.log(chapter.chapter)
+    i = 0
+    $.each(chapter.chapter, function(index, value) {
+        if(value.id==$stateParams.id){
+          $scope.content = value.content
+        }
+        i++;
+    });
+    id = parseInt($stateParams.id)
+
+    if(id < i){
+      $scope.next = id + 1
+    }else{
+      $scope.next = false
+    }
+    $scope.course_title = chapter.course_title;
+  })
+})
+
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
   regUserDataRef.once("value", function(data){
@@ -449,7 +410,6 @@ angular.module('ngantriApp.controllers', [])
        }
      });
    };
-<<<<<<< HEAD
 
 }).controller('PointListCtrl', function($scope, $state, $rootScope, $window, $firebase, $ionicPopup, $timeout) {
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
@@ -579,13 +539,16 @@ angular.module('ngantriApp.controllers', [])
     {
       latitude: -0.7893, longitude: 114,
       id: 0,
-      "options": {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
-          labelClass: "marker-labels"},
-      show: true
+      options: {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
+          labelClass: "marker-labels"}
+
+    },
+    {
+      latitude: -0.50, longitude: 90,
+      id: 1,
+      options: {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
+          labelClass: "marker-labels"}
     }
   ]
 });
 
-=======
-});
->>>>>>> jadijuara

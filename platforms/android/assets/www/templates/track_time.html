@@ -1,13 +1,34 @@
-<ion-view title="Home">
+<ion-view title="Enjoy ya!">
+    <div class="content has-header">
+    <h1>
+        <div align="center">
+            <timer interval="1000">{{hours}}:{{minutes}}:{{seconds}}</timer>
+        </div>
+    </h1>
     <div align="center">
-        <span>02</span><span>:</span><span>00</span>
+        <button class="button button-small button-stable button-outline" ng-click="startTrack()">
+            Pause
+        </button>
+        <button class="button button-small button-stable button-outline" ng-click="stopTrack()">
+            Stop
+        </button>
     </div>
+    <!--<div class="clearfix"></div>-->
+    <hr/>
+    <div align="center"><h3>Daftar Rekaman Pelajaran</h3></div>
+        <div class="list" style="margin-left: 10px">
+        <button class="button  button-small button-stable icon ion-record" ng-click="recordVoice()">
+            Buat rekaman baru
+        </button>
+        <button class="button  button-small button-stable icon ion-play" ng-click="playAll()">
+            Mainkan semua rekaman dan ulangi
+        </button>
 
-
-    <button class="button button-small button-stable button-outline button-inline" ng-click="stopTrack()">
-        Pause
-    </button>
-    <button class="button button-small button-stable button-outline button-inline" ng-click="stopTrack()">
-        Stop
-    </button>
+        </div>
+    <div class="list" style="margin-left: 10px">
+        <button class="button icon ion-play">
+            Menghafal ayat kursi
+        </button>
+    </div>
+    </div>
 </ion-view>

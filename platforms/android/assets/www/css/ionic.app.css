@@ -8010,7 +8010,6 @@ ion-nav-view {
 .form-confirm{
   margin-top: 20px;
 }
-<<<<<<< HEAD
 .course-list span{
   float: right;
   color: #444;
@@ -8019,12 +8018,12 @@ ion-nav-view {
 .course-content{
   min-height: 300px;
 }
-
+.marker-labels{
+  background: rgba(191, 123, 123, 0.53);
+}
 .marker-labels p{
   font-weight: 600;
 }
 .scroll ,.angular-google-map, .angular-google-map-container{
   height: 100%
 }
-=======
->>>>>>> jadijuara

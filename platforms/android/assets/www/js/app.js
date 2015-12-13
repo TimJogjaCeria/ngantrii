@@ -4,11 +4,8 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-<<<<<<< HEAD
-angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'uiGmapgoogle-maps', 'ngantriApp.controllers'])
-=======
-angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angular-humanize-duration', 'ngCordova', 'firebase', 'froala', 'ngantriApp.controllers'])
->>>>>>> jadijuara
+angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'uiGmapgoogle-maps', 'timer', 'angular-humanize-duration', 'ngantriApp.controllers'])
+
 
 .factory('School', ['$firebaseArray', function($firebaseArray) {
     var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
@@ -18,7 +15,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
 }])
-<<<<<<< HEAD
 .factory('Users', ['$firebaseObject', function($firebaseObject) {
   return function(id){
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/' + id);
@@ -38,21 +34,15 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
 
 }])
 
-=======
->>>>>>> jadijuara
 //.factory('Course', ['$firebaseArray', function($firebaseArray) {
 //    var courseRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/mata_pelajaran/semester_aktif/');
 //    return $firebaseArray(courseRef);
 //}])
-<<<<<<< HEAD
 
-=======
->>>>>>> jadijuara
 .factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
   var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
   return $firebaseArray(userRef);
 }])
-<<<<<<< HEAD
 
 .factory("Chapters", ['$firebaseArray', '$firebaseObject', function($firebaseArray,$firebaseObject) {
   return function(course,id) {
@@ -70,8 +60,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
     return $firebaseArray(chapterRef);
   };
 }])
-=======
->>>>>>> jadijuara
 .factory('SyncService', function($http, $log) {
     $log.info('SyncMataPelajaranAktif Factory');
     var url = 'https://raw.githubusercontent.com/TimJogjaCeria/sayangjuara-backend/master/matpel_semester_aktif.json';
@@ -82,7 +70,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
       }
     }
 })
-<<<<<<< HEAD
 
 .factory("Maps", ['$firebaseArray', function($firebaseArray) {
   var schoolRef = new Firebase("https://ngantri.firebaseio.com/sekolah/");
@@ -90,9 +77,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
 }])
 
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log, $stateParams) {
-=======
-.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
->>>>>>> jadijuara
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -206,7 +190,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
         templateUrl: "templates/user.html"
       }
     }
-<<<<<<< HEAD
   })
 
   .state('home.courseList', {
@@ -230,9 +213,6 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
   })
 
   .state('teacher', {
-=======
-  }).state('teacher', {
->>>>>>> jadijuara
     url: '/teacher',
     abstract: true,
     templateUrl: 'templates/teacher-tabs.html'
@@ -288,23 +268,19 @@ angular.module('ngantriApp', ['ionic', 'timer', '$cordovaSocialSharing', 'angula
     url: '/:course/:id/edit',
     controller: 'TeacherChapterEditCtrl',
     templateUrl: "templates/teacher-chapter-edit.html"
-<<<<<<< HEAD
+
   })
 
   .state('gmap', {
     url: '/gmap',
     controller: 'GmapCtrl',
     templateUrl: "templates/gmap.html"
-  });
-=======
   }).state('tracktime', {
     url: '/tracktime/:id',
     templateUrl: 'templates/track_time.html',
     controller: 'TrackTime'
-  })
+  });
 
-  ;
->>>>>>> jadijuara
 
 
   // if none of the above states are matched, use this as the fallback
