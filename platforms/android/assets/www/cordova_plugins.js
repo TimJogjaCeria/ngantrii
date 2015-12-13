@@ -236,6 +236,22 @@ module.exports = [
         "clobbers": [
             "window.plugins.socialsharing"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-dialogs/www/notification.js",
+        "id": "cordova-plugin-dialogs.notification",
+        "pluginId": "cordova-plugin-dialogs",
+        "merges": [
+            "navigator.notification"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-dialogs/www/android/notification.js",
+        "id": "cordova-plugin-dialogs.notification_android",
+        "pluginId": "cordova-plugin-dialogs",
+        "merges": [
+            "navigator.notification"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -244,7 +260,8 @@ module.exports.metadata =
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-media-capture": "1.1.0",
     "cordova-plugin-whitelist": "1.2.1-dev",
-    "cordova-plugin-x-socialsharing": "5.0.7"
+    "cordova-plugin-x-socialsharing": "5.0.7",
+    "cordova-plugin-dialogs": "1.2.0"
 }
 // BOTTOM OF METADATA
 });

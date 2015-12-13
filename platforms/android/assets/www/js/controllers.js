@@ -257,7 +257,7 @@ angular.module('ngantriApp.controllers', [])
 
     $scope.broadcastPengumuman = function(){
       console.log('Pengumuman');
-      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'Add'], '')
+      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'OK'], '')
         .then(function (result) {
           if(result.buttonIndex == 2) {
             $cordovaSocialSharing.share(result.input1);
