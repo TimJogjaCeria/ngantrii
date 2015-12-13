@@ -295,6 +295,30 @@ angular.module('ngantriApp.controllers', [])
         $state.go('home.home');
       });
     });
+
+    $scope.recordVoice = function(){
+      console.log('Record voice');
+      // capture callback
+      var captureSuccess = function(mediaFiles) {
+        var i, path, len;
+        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+          path = mediaFiles[i].fullPath;
+          // do something interesting with the file
+        }
+      };
+
+// capture error callback
+      var captureError = function(error) {
+        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+      };
+
+// start audio capture
+      navigator.device.capture.captureAudio(captureSuccess, captureError, {limit:2});
+    }
+
+    $scope.playAll = function() {
+      console.log('Play all recorded voice based on active course');
+    }
   })
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
