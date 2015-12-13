@@ -1,13 +1,17 @@
-<ion-view title="Home">
+<ion-view title="Lacak Waktu Belajar">
+    <div class="content has-header">
+        <h1>
     <div align="center">
-        <span>02</span><span>:</span><span>00</span>
+        <timer interval="1000">{{hours}}:{{minutes}}:{{seconds}}</timer>
     </div>
-
-
-    <button class="button button-small button-stable button-outline button-inline" ng-click="stopTrack()">
+        </h1>
+            <div align="center">
+    <button class="button button-small button-stable button-outline" ng-click="startTrack()">
         Pause
     </button>
-    <button class="button button-small button-stable button-outline button-inline" ng-click="stopTrack()">
+    <button class="button button-small button-stable button-outline" ng-click="stopTrack()">
         Stop
     </button>
+            </div>
+        </div>
 </ion-view>

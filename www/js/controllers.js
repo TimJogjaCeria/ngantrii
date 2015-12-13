@@ -261,8 +261,40 @@ angular.module('ngantriApp.controllers', [])
     $scope.trackMatpel = function(matpel_id){
       console.log('matpel_id');
       console.log(matpel_id);
+      $state.go('tracktime', {'id': matpel_id});
     }
 
+  })
+.controller('TrackTime', function($scope, $rootScope, $state, $stateParams){
+    console.log('TrackTime');
+
+    $scope.timerRunning = true;
+    $scope.matpel_id = $stateParams.id;
+
+    $scope.startTrack = function (){
+      $scope.$broadcast('timer-start');
+      $scope.timerRunning = true;
+    };
+
+    $scope.stopTrack = function (){
+      $scope.$broadcast('timer-stop');
+      $scope.timerRunning = false;
+    };
+
+    $scope.$on('timer-stopped', function (event, data){
+      console.log('Timer Stopped - data = ', data);
+      var refTrackTime = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif/' + $scope.matpel_id);
+      refTrackTime.once("value", function(trackTime){
+        var existing_data = trackTime.val();
+        existing_data.total_time = data; //TODO only last value saved, not accumulated
+        console.log('existing_data');
+        console.log(existing_data);
+
+        refTrackTime.set(existing_data);
+        $rootScope.notify('Terimakasih ya sudah belajar selama ' + data.hours + ' jam, ' + data.minutes + ' menit, ' + data.seconds + ' detik. :)');
+        $state.go('home.home');
+      });
+    });
   })
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);

@@ -23,13 +23,15 @@
 
   <div ng-if="user.role == 'Siswa'">
       <ion-content>
+        <div class="list">
         <ion-list>
-          <ion-item ng-repeat="matpel in matapelajaran">
-            <button class="button button-small button-stable button-outline button-inline">
-              {{matpel.nama}}
+          <ion-item ng-repeat="matpel in matapelajaran" class="item item-input">
+            <button class="button icon ion-clock" ng-click="trackMatpel(matpel.id)">
+              {{matpel.nama}} <span>{{matpel.total_time.hours}}h{{matpel.total_time.minutes}}m{{matpel.total_time.seconds}}s</span>
             </button>
             </ion-item>
         </ion-list>
+          </div>
       </ion-content>
     </div>
 </ion-view>
