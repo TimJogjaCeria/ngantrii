@@ -473,6 +473,13 @@ angular.module('ngantriApp.controllers', [])
       id: 0,
       options: {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
           labelClass: "marker-labels"}
+
+    },
+    {
+      latitude: -0.50, longitude: 90,
+      id: 1,
+      options: {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
+          labelClass: "marker-labels"}
     }
   ]
 });
