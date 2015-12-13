@@ -223,7 +223,8 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
+  //TODO ini home nyampur tiga role. Harusnya dipisah2 dong
+  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, $cordovaDialogs, $cordovaSocialSharing, SyncService) {
     console.log('HomeCtrl created');
 
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
@@ -252,6 +253,17 @@ angular.module('ngantriApp.controllers', [])
         })
         $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
+    }
+
+    $scope.broadcastPengumuman = function(){
+      console.log('Pengumuman');
+      $cordovaDialogs.prompt('Silahkan, mengetikkan pengumuman disini', 'Sayang Juara', ['Cancel', 'OK'], '')
+        .then(function (result) {
+          if(result.buttonIndex == 2) {
+            $cordovaSocialSharing.share(result.input1);
+          }
+        }
+      );
     }
 
     $scope.doRefresh = function() {
