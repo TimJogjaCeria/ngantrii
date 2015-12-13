@@ -1,7 +1,9 @@
 <ion-view title="Buat Bab">
 <div class="bar bar-subheader">
   <div>
-    <a ng-repeat="c in chapters | filter:chapter" ui-sref="teacher.courseChapter.continue({id:l.chapter})"></a>
+    {{chapters}}
+    <a ng-repeat="c in chapters | filter:chapter" ui-sref="teacher.courseChapter.continue({id:c.id})" ng-bind="c.id"></a>
+    }
   </div>
 </div>
   <ion-content>

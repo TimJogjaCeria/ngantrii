@@ -1,0 +1,12 @@
+<ion-view title="Daftar Kursus">
+  <ion-content>
+    <div class="content ionic-pseudo content-queue">
+      <div class="list course-list">
+        <a class="item" ng-repeat="l in courseList | filter:search" ui-sref="home.courseDetail({course: l.$id, id:1})">
+          <p ng-bind="l.course_title"></p>
+          <span ng-bind="'Oleh:' + l.name"></span>
+        </a>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

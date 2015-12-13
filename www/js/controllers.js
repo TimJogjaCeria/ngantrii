@@ -53,7 +53,12 @@ angular.module('ngantriApp.controllers', [])
         console.log('user-Login');
         console.log(user_login_data);
         window.localStorage['user_id'] = user.uid;
-        $state.go('home.home');
+        if(user_login_data.role == "Guru" || user_login_data.role == "Wali Murid"){
+          $state.go('teacher.home');
+        }else{
+          $state.go('home.home');
+        }
+
       });
 
     }, function(error) {
@@ -223,13 +228,21 @@ angular.module('ngantriApp.controllers', [])
     });
   }
 })
-  .controller('HomeCtrl', function($scope, $rootScope, $firebase, SyncService) {
+  .controller('HomeCtrl', function($scope, $state, $rootScope, $firebase, SyncService) {
     console.log('HomeCtrl created');
+
     var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
     regUserDataRef.once("value", function(data){
       $scope.user = data.val();
     });
 
+    var refMatpelAktif = new Firebase($rootScope.baseUrl + 'mata_pelajaran/semester_aktif');
+    refMatpelAktif.once("value", function(data){
+      $scope.matapelajaran = data.val();
+      $scope.$apply();
+    });
+
+    //TODO Pisahkan antara guru siswa dan ortu
     $scope.syncMataPelajaranAktif = function(){
       SyncService.getMataPelajaranAktif().then(function(resp){
         console.log(resp.data.data);
@@ -245,7 +258,64 @@ angular.module('ngantriApp.controllers', [])
         $rootScope.notify('Mata pelajaran aktif pada semester ini sudah disinkronisasikan')
       });
     }
+
+    $scope.doRefresh = function() {
+      console.log('refresh');
+    }
+
+    $scope.trackMatpel = function(matpel_id){
+      console.log('matpel_id');
+      console.log(matpel_id);
+    }
+
   })
+
+.controller('HomeCourseListCtrl',function($scope, $rootScope, $stateParams, Course, Users){
+  $scope.courseList = [];
+  $scope.course = Course();
+
+  $scope.course.$loaded()
+    .then(function(){
+      angular.forEach($scope.course, function(l) {
+        var user = Users(l['user_id']);
+        user.$loaded().then(function(){
+          l['name'] = user['name']
+          $scope.courseList.push(l)
+        })
+      })
+    });
+
+  // var regUserDataRef = new Firebase($rootScope.baseUrl + 'course/');
+  // regUserDataRef.once("value", function(data){
+  //   for(i in data.val()){
+  //     console.log(i)
+  //   }
+  // });
+})
+
+.controller('HomeCourseDetailCtrl', function($scope, $stateParams, Chapters){
+  var chapter = Chapters($stateParams.course)
+  chapter.$loaded().then(function(){
+    $scope.chapter = chapter;
+    console.log(chapter.chapter)
+    i = 0
+    $.each(chapter.chapter, function(index, value) {
+        if(value.id==$stateParams.id){
+          $scope.content = value.content
+        }
+        i++;
+    });
+    id = parseInt($stateParams.id)
+
+    if(id < i){
+      $scope.next = id + 1
+    }else{
+      $scope.next = false
+    }
+    $scope.course_title = chapter.course_title;
+  })
+})
+
 .controller('ProfileCtrl', function($scope, $state, $rootScope, $window, $ionicPopup, $log, $cordovaSocialSharing, $firebase){
   var regUserDataRef = new Firebase($rootScope.baseUrl + 'user_data/' + window.localStorage['user_id']);
   regUserDataRef.once("value", function(data){
@@ -376,9 +446,10 @@ angular.module('ngantriApp.controllers', [])
   }
 })
 .controller('TeacherChapterDetectCtrl', function($scope, Chapter, $stateParams, Course){
-  var regUserDataRef = new Firebase("https://ngantri.firebaseio.com/course/" + $stateParams.course + "/chapter/");
-  regUserDataRef.once("value", function(data){
-    console.log(data.val());
+  var chapter = Chapter($stateParams.course)
+  chapter.$loaded().then(function(){
+    console.log(chapter)
+    $scope.chapters = chapter
   })
 })
 .controller('TeacherChapterEditCtrl',function($scope, $stateParams, Chapter){

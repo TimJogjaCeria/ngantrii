@@ -8010,3 +8010,11 @@ ion-nav-view {
 .form-confirm{
   margin-top: 20px;
 }
+.course-list span{
+  float: right;
+  color: #444;
+  font-size: 12px;
+}
+.course-content{
+  min-height: 300px;
+}

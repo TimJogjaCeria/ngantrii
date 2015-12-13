@@ -3,7 +3,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.controllers'])
+
+angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngantriApp.controllers'])
+
 .factory('School', ['$firebaseArray', function($firebaseArray) {
     var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
     return $firebaseArray(schoolRef);
@@ -12,7 +14,63 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
     var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/');
     return $firebaseArray(userRef);
 }])
-.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log) {
+.factory('Users', ['$firebaseObject', function($firebaseObject) {
+  return function(id){
+    var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/user_data/' + id);
+    return $firebaseObject(userRef);
+  }
+
+}])
+.factory('Course', ['$firebaseArray', function($firebaseArray) {
+  return function(id) {
+    if (!id) {
+      var courseRef = new Firebase('https://ngantri.firebaseio.com/course/');
+    }else{
+      var courseRef = new Firebase('https://ngantri.firebaseio.com/course/' + id);
+    }
+    return $firebaseArray(courseRef);
+  };
+
+}])
+
+//.factory('Course', ['$firebaseArray', function($firebaseArray) {
+//    var courseRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/mata_pelajaran/semester_aktif/');
+//    return $firebaseArray(courseRef);
+//}])
+
+.factory('ReferralCode', ['$firebaseArray', function($firebaseArray) {
+  var userRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/referral_code/');
+  return $firebaseArray(userRef);
+}])
+
+.factory("Chapters", ['$firebaseArray', '$firebaseObject', function($firebaseArray,$firebaseObject) {
+  return function(course,id) {
+    var mode = ""
+    if(id){
+      mode = "/chapter/" + id
+    }
+    var chapterRef = new Firebase("https://ngantri.firebaseio.com/course/" + course + mode);
+    return $firebaseObject(chapterRef);
+  };
+}])
+.factory("Chapter", ['$firebaseArray','$firebaseObject', function($firebaseArray, $firebaseObject) {
+  return function(id) {
+    var chapterRef = new Firebase("https://ngantri.firebaseio.com/course/" + id + "/chapter/");
+    return $firebaseArray(chapterRef);
+  };
+}])
+.factory('SyncService', function($http, $log) {
+    $log.info('SyncMataPelajaranAktif Factory');
+    var url = 'https://raw.githubusercontent.com/TimJogjaCeria/sayangjuara-backend/master/matpel_semester_aktif.json';
+
+    return {
+      getMataPelajaranAktif: function () {
+        return $http.get(url);
+      }
+    }
+})
+
+.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log, $stateParams) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -24,6 +82,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
         }
 
     });
+    $rootScope.$stateParams = $stateParams;
     $rootScope.baseUrl = 'https://ngantri.firebaseio.com/sayangjuara/';
         var authRef = new Firebase($rootScope.baseUrl);
         $rootScope.auth = $firebaseAuth(authRef);
@@ -85,7 +144,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
 
 .config(function($stateProvider, $urlRouterProvider) {
   // redirect the current feature just course making
-  $urlRouterProvider.when('/teacher', '/teacher/course');
+  // $urlRouterProvider.when('/teacher', '/teacher/course');
   $stateProvider.state('intro', {
     url: '/intro',
     templateUrl: 'templates/intro.html',
@@ -102,6 +161,10 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
       url: '/registerschool',
       templateUrl: 'templates/choose_school.html',
       controller: 'ChooseSchoolCtrl'
+  }).state('showreferralinfo', {
+      url: '/showreferralinfo',
+      templateUrl: 'templates/show_referralinfo.html',
+      controller: 'ShowReferralInfoCtrl'
   }).state('home', {
     url: '/home',
     abstract: true,
@@ -114,31 +177,6 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
         templateUrl: "templates/home.html"
       }
     }
-  }).state('home.queue', {
-    url: '/queue/:id',
-    controller: 'QueueCtrl',
-    views: {
-      'home-tab': {
-        controller: 'QueueCtrl',
-        templateUrl: "templates/queue.html"
-      }
-    }
-  }).state('home.current', {
-    url: '/current',
-    views: {
-      'current-tab': {
-        controller: 'ActiveListCtrl',
-        templateUrl: "templates/current.html"
-      }
-    }
-  }).state('home.active', {
-    url: '/active/:id',
-    views: {
-      'current-tab': {
-        controller: 'ActiveCtrl',
-        templateUrl: "templates/active.html"
-      }
-    }
   }).state('home.user', {
     url: '/user',
     views: {
@@ -146,25 +184,35 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
         templateUrl: "templates/user.html"
       }
     }
-  }).state('home.balancestatus', {
-    url: '/balanceuser',
+  })
+
+  .state('home.courseList', {
+    url: '/user-course',
     views: {
-      'user-tab': {
-        templateUrl: "templates/balancestatus.html"
+      'home-course': {
+        controller: "HomeCourseListCtrl",
+        templateUrl: "templates/home-course-list.html"
       }
     }
-  }).state('home.buypoint', {
-    url: '/buypoint',
+  })
+
+  .state('home.courseDetail', {
+    url: '/user-course/:course/:id',
     views: {
-      'user-tab': {
-        templateUrl: "templates/buypoint.html"
+      'home-course': {
+        controller: "HomeCourseDetailCtrl",
+        templateUrl: "templates/home-course-detail.html"
       }
     }
-  }).state('teacher', {
+  })
+
+  .state('teacher', {
     url: '/teacher',
     abstract: true,
     templateUrl: 'templates/teacher-tabs.html'
-  }).state('teacher.home', {
+  })
+
+  .state('teacher.home', {
     url: '',
     views: {
       'teacher-home': {
@@ -190,6 +238,7 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
     }
   }).state('teacher.courseChapter', {
     url: '/course/chapter/create',
+    abstract: true,
     views: {
       'teacher-course': {
         controller: 'TeacherChapterDetectCtrl',
@@ -204,8 +253,14 @@ angular.module('ngantriApp', ['ionic', 'firebase', 'froala', 'ngantriApp.control
         templateUrl: "templates/teacher-chapter-create.html"
       }
     }
-  }).state('teacher.courseChapter.edit', {
+  }).state('teacher.courseChapter.continue', {
     url: '/:course/:id',
+    controller: 'TeacherChapterContinueCtrl',
+    templateUrl: "templates/chapter-form.html"
+  })
+  .state('teacher.courseChapter.edit', {
+    url: '/:course/:id/edit',
+    controller: 'TeacherChapterEditCtrl',
     templateUrl: "templates/teacher-chapter-edit.html"
   });
 

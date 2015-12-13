@@ -1,0 +1,10 @@
+<ion-view title="{{course_title + '(Bab ' + $stateParams.id + ')'}}">
+  <ion-content>
+    <div class="course-content" ng-bind-html="content">
+    </div>
+    <div class="course-control">
+      <button ng-show="next" class="button button-positive col col-33 pull-left" ui-sref="home.courseList" ng-hide="loading"><i class="icon ion-ios7-home"></i></button>
+      <button ng-show="next" class="button button-positive col col-33 pull-right" ui-sref="home.courseDetail({course: $stateParams.course, id: next})" >Selanjutnya <i class="icon ion-ios7-arrow-right"></i><i class="icon ion-ios7-arrow-right"></i></button>
+    </div>
+  </ion-content>
+</ion-view>
