@@ -8018,3 +8018,10 @@ ion-nav-view {
 .course-content{
   min-height: 300px;
 }
+
+.marker-labels p{
+  font-weight: 600;
+}
+.scroll ,.angular-google-map, .angular-google-map-container{
+  height: 100%
+}

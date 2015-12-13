@@ -455,5 +455,26 @@ angular.module('ngantriApp.controllers', [])
 .controller('TeacherChapterEditCtrl',function($scope, $stateParams, Chapter){
 
 
+})
+
+.controller('GmapCtrl', function($scope){
+  $scope.map = { center: { latitude: -0.7893, longitude: 114 }, zoom: 4 };
+  var onSuccess = function(position) {
+    $scope.map.center = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+    };
+    $scope.map.zoom = 10;
+    $scope.$apply();
+  }
+  $scope.markers = [
+    {
+      latitude: -0.7893, longitude: 114,
+      id: 0,
+      "options": {labelContent: '<p>SMAN 1 Yogyakarta</p><span>5</span>',
+          labelClass: "marker-labels"},
+      show: true
+    }
+  ]
 });
 

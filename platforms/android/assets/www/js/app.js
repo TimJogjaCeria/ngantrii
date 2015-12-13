@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 
-angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngantriApp.controllers'])
+angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'uiGmapgoogle-maps', 'ngantriApp.controllers'])
 
 .factory('School', ['$firebaseArray', function($firebaseArray) {
     var schoolRef = new Firebase('https://ngantri.firebaseio.com/sayangjuara/school/');
@@ -69,6 +69,11 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
       }
     }
 })
+
+.factory("Maps", ['$firebaseArray', function($firebaseArray) {
+  var schoolRef = new Firebase("https://ngantri.firebaseio.com/sekolah/");
+  return $firebaseArray(schoolRef);
+}])
 
 .run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading, $log, $stateParams) {
     $ionicPlatform.ready(function() {
@@ -262,6 +267,12 @@ angular.module('ngantriApp', ['ionic', 'ngCordova', 'firebase', 'froala', 'ngant
     url: '/:course/:id/edit',
     controller: 'TeacherChapterEditCtrl',
     templateUrl: "templates/teacher-chapter-edit.html"
+  })
+
+  .state('gmap', {
+    url: '/gmap',
+    controller: 'GmapCtrl',
+    templateUrl: "templates/gmap.html"
   });
 
 
